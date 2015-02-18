@@ -1,16 +1,11 @@
 <?php
 // vim: set ts=4 sw=4 sts=4 et:
 
-namespace XLite\Module\MultiSafepay\Ideal\Controller\Customer;
+namespace XLite\Module\MultiSafepay\Visa\Controller\Customer;
 
-/**
- * Ideal  page controller
- * This page is only used to redirect customer to iDEAL side
- */
-class Ideal extends \XLite\Controller\Customer\ACustomer
+class Visa extends \XLite\Controller\Customer\ACustomer
 {
     /**
-     * Do redirect customer to iDEAL for payment
      *
      * @return void
      */
@@ -18,7 +13,7 @@ class Ideal extends \XLite\Controller\Customer\ACustomer
     {
         try {
 
-            $processor = new \XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor\Ideal();
+            $processor = new \XLite\Module\MultiSafepay\Visa\Model\Payment\Processor\Visa();
 
             $processor->doTransactionRequest(
                 \XLite\Core\Request::getInstance()->iid,

@@ -2,9 +2,9 @@
 
 // vim: set ts=4 sw=4 sts=4 et:
 
-namespace XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor;
+namespace XLite\Module\MultiSafepay\Visa\Model\Payment\Processor;
 
-class Ideal extends \XLite\Model\Payment\Base\WebBased {
+class Visa extends \XLite\Model\Payment\Base\WebBased {
 
     /**
      * Get operation types
@@ -19,7 +19,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
     
     
     protected $allowedCurrencies = array(
-        'EUR', 'USD'
+        'EUR', 'USD', 'GBP'
     );
 
     /**
@@ -28,7 +28,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
      * @return string Widget class name or template path
      */
     public function getSettingsWidget() {
-        return 'modules/MultiSafepay/Ideal/config.tpl';
+        return 'modules/MultiSafepay/Visa/config.tpl';
     }
 
     /**
@@ -49,7 +49,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
 
             require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
-            $settings = $this->getIdealPaymentSettings();
+            $settings = $this->getVisaPaymentSettings();
 
             $msp = new \MultiSafepay();
             $msp->test = $settings['environment'] != 'Y' ? false : true;
@@ -219,7 +219,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
      * @return void
      */
     public function doTransactionRequest($issuerId, $transid) {
-        if ($issuerId) {
+        //if ($issuerId) {
 
             if (!$this->transaction && $transid) {
                 $this->transaction = \XLite\Core\Database::getRepo('XLite\Model\Payment\Transaction')
@@ -231,7 +231,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
 
                 require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
-                $settings = $this->getIdealPaymentSettings();
+                $settings = $this->getVisaPaymentSettings();
 
                 $msp = new \MultiSafepay();
                 $msp->test = $settings['environment'] != 'Y' ? false : true;
@@ -259,7 +259,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
                 $msp->transaction['amount'] = $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue())*100;
                 $msp->transaction['description'] = 'Order #' . $this->getOrder()->getOrderNumber();
                 // $msp->transaction['items'] = $items;
-                $msp->transaction['gateway'] = 'IDEAL';
+                $msp->transaction['gateway'] = 'VISA';
                 $msp->transaction['daysactive'] = $settings['daysactive'];
                 $msp->plugin_name = 'X-CART';
                 $msp->version = '1.0.0';
@@ -268,8 +268,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
                 $msp->plugin['plugin_version'] = '1.0.0';
                 $msp->plugin['partner'] = '';
                 $msp->plugin['shop_root_url'] = '';
-                $msp->extravars = $issuerId;
-                $url = $msp->startDirectXMLTransaction();
+                $url = $msp->startTransaction();
 
                 if ($msp->error) {
                     \XLite\Core\TopMessage::addError("Error " . $msp->error_code . ": " . $msp->error);
@@ -280,35 +279,17 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             } else {
                 \XLite\Core\TopMessage::addError('Unknown payment transaction');
             }
-        }
+        //}
     }
 
-    /**
-     * Get list of issuers from iDEAL
-     *
-     * @return array
-     */
-    public function getIdealIssuers() {
-        require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
-
-        $settings = $this->getIdealPaymentSettings();
-
-        $msp = new \MultiSafepay();
-        $msp->test = $settings['environment'] != 'Y' ? false : true;
-        $msp->merchant['account_id'] = $settings['accountid'];
-        $msp->merchant['site_id'] = $settings['siteid'];
-        $msp->merchant['site_code'] = $settings['sitesecurecode'];
-        $issuers = $msp->getIdealIssuers();
-
-        return $issuers;
-    }
+  
 
     /**
      * Get array of payment settings
      *
      * @return array
      */
-    public function getIdealPaymentSettings() {
+    public function getVisaPaymentSettings() {
         $result = array();
 
         $fields = $this->getAvailableSettings();
@@ -330,7 +311,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
         $result = parent::getSetting($name);
 
         if (is_null($result)) {
-            $method = \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->findOneBy(array('service_name' => 'MultiSafepay iDEAL'));
+            $method = \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->findOneBy(array('service_name' => 'MultiSafepay VISA'));
             $result = $method ? $method->getSetting($name) : null;
         }
 
@@ -343,7 +324,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
      * @return string
      */
     protected function getFormURL() {
-        return \XLite\Core\Converter::buildURL('ideal', 'transaction');
+        return \XLite\Core\Converter::buildURL('visa', 'transaction');
     }
 
     /**
@@ -364,14 +345,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
 
     // {{{ Checkout
 
-    /**
-     * Get input template
-     *
-     * @return string
-     */
-    public function getInputTemplate() {
-        return 'modules/MultiSafepay/Ideal/checkout/ideal.tpl';
-    }
+
 
     /**
      * Process input errors
@@ -392,16 +366,6 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
         return $errors;
     }
 
-    /**
-     * Get input data labels list
-     *
-     * @return array
-     */
-    protected function getInputDataLabels() {
-        return array(
-            'iid' => 'Select an issuer',
-        );
-    }
 
     /**
      * Get input data access levels list

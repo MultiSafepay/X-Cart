@@ -1,10 +1,10 @@
 <?php
 // vim: set ts=4 sw=4 sts=4 et:
 
-namespace XLite\Module\MultiSafepay\Ideal;
+namespace XLite\Module\MultiSafepay\Visa;
 
 /**
- * iDEAL module
+ * Visa module
  */
 abstract class Main extends \XLite\Module\AModule
 {
@@ -25,7 +25,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getModuleName()
     {
-        return 'iDEAL';
+        return 'VISA';
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getDescription()
     {
-        return 'Enables MultiSafepay iDEAL transactions';
+        return 'Enables MultiSafepay VISA transactions';
     }
 
     /**
