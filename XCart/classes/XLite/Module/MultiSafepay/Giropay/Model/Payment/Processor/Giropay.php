@@ -40,92 +40,8 @@ class Giropay extends \XLite\Model\Payment\Base\WebBased {
      */
     public function processReturn(\XLite\Model\Payment\Transaction $transaction) {
         parent::processReturn($transaction);
-
-        $message = '';
-        $data = array();
-
-        if (\XLite\Core\Request::getInstance()->transactionid) {
-            $status = $transaction::STATUS_FAILED;
-
-            require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
-
-            $settings = $this->getGiropayPaymentSettings();
-
-            $msp = new \MultiSafepay();
-            $msp->test = $settings['environment'] != 'Y' ? false : true;
-            $msp->merchant['account_id'] = $settings['accountid'];
-            $msp->merchant['site_id'] = $settings['siteid'];
-            $msp->merchant['site_code'] = $settings['sitesecurecode'];
-            $msp->transaction['id'] = \XLite\Core\Request::getInstance()->transactionid;
-            $status = $msp->getStatus();
-            $details = $msp->details;
-
-
-            if ($msp->error) {
-                $message .= "Error " . $msp->error_code . ": " . $msp->error . PHP_EOL;
-            } else {
-                switch ($status) {
-                    case "initialized":
-                        $order_status = $transaction::STATUS_PENDING;
-                        break;
-                    case "completed":
-                        $order_status = $transaction::STATUS_SUCCESS;
-                        break;
-                    case "uncleared":
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_QUEUED;
-                        break;
-                    case "void":
-                        $order_status = $transaction::STATUS_VOID;
-                        break;
-                    case "declined":
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_DECLINED;
-                        break;
-                    case "refunded":
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_REFUNDED;
-                        break;
-                    case "partial_refunded":
-                        $this->setDetail('status', 'Transaction is partially refunded', 'Status');
-                        $this->transaction->setNote('Transaction is partially refunded');
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_REFUNDED;
-                        break;
-                    case "expired":
-                        $order_status = $transaction::STATUS_CANCELED;
-                        break;
-                    case "cancelled":
-                        //$this->setDetail('status', 'Customer has canceled checkout before completing their payments', 'Status');
-                        //$this->transaction->setNote('Customer has canceled checkout before completing their payments');
-                        $order_status = $transaction::STATUS_CANCELED;
-                        break;
-                    case "shipped":
-                        //don't do anything for status shipped.
-                        //$order_status = $transaction::STATUS_SUCCESS;
-                        break;
-                }
-            }
-        } else {
-            $message = static::t('Transacion ID is missing, update aborted');
-        }
-
-        // Save data in order history
-
-        if ($message) {
-            $data['message'] = $message;
-        }
-        
-        // Set transaction status
-        $this->transaction->setStatus($order_status);
-        
-        if(\XLite\Core\Request::getInstance()->redirect != 'true')
-        {
-            if(\XLite\Core\Request::getInstance()->type == 'initial'){
-                echo '<a href="'.$this->getReturnURL(null, true).'&redirect=true&transactionid='.\XLite\Core\Request::getInstance()->transactionid.'">Terug naar de webwinkel</a>';exit;
-            }elseif(\XLite\Core\Request::getInstance()->cancel == '1'){
-                $order_status = $transaction::STATUS_CANCELED;
-                $this->transaction->setStatus($order_status);
-            }else{
-                echo 'OK';exit;
-            }
-        }
+        $processor = new \XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor\Ideal();
+        $processor->processReturn($transaction);
     }
 
     /**
@@ -219,104 +135,11 @@ class Giropay extends \XLite\Model\Payment\Base\WebBased {
      * @return void
      */
     public function doTransactionRequest($issuerId, $transid) {
-        //if ($issuerId) {
-
-            if (!$this->transaction && $transid) {
-                $this->transaction = \XLite\Core\Database::getRepo('XLite\Model\Payment\Transaction')
-                        ->findOneByPublicTxnId($transid);
-            }
-
-            if ($this->transaction) {
-                $orderId = $this->getSetting('prefix') . $this->transaction->getPublicTxnId();
-
-                require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
-
-                $settings = $this->getGiropayPaymentSettings();
-
-                $msp = new \MultiSafepay();
-                $msp->test = $settings['environment'] != 'Y' ? false : true;
-                $msp->merchant['account_id'] = $settings['accountid'];
-                $msp->merchant['site_id'] = $settings['siteid'];
-                $msp->merchant['site_code'] = $settings['sitesecurecode'];
-                $msp->merchant['notification_url'] = $this->getReturnURL(null, true) . "&type=initial";
-                $msp->merchant['cancel_url'] = $this->getReturnURL(null, true, true);
-                $msp->merchant['redirect_url'] = $this->getReturnURL(null, true)."&redirect=true";
-                $msp->customer['locale'] = strtoupper(\XLite\Core\Session::getInstance()->getLanguage()->getCode());
-                $msp->customer['firstname'] = $this->getProfile()->getBillingAddress()->getFirstname();
-                $msp->customer['lastname'] = $this->getProfile()->getBillingAddress()->getLastname();
-                $msp->customer['zipcode'] = $this->getProfile()->getBillingAddress()->getZipcode();
-                $msp->customer['state'] = '';
-                $msp->customer['city'] = $this->getProfile()->getBillingAddress()->getCity();
-                $msp->customer['country'] = strtoupper($this->getProfile()->getBillingAddress()->getCountry()->getCode());
-                $msp->customer['phone'] = $this->getProfile()->getBillingAddress()->getPhone();
-                $msp->customer['email'] = $this->getProfile()->getLogin();
-                $msp->customer['ipaddress'] = $_SERVER['REMOTE_ADDR'];
-                $msp->customer['forwardedip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                $msp->parseCustomerAddress($this->getProfile()->getBillingAddress()->getStreet()); 
-                
-                $msp->transaction['id'] = $orderId;
-                $msp->transaction['currency'] = strtoupper($this->getOrder()->getCurrency()->getCode());
-                $msp->transaction['amount'] = $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue())*100;
-                $msp->transaction['description'] = 'Order #' . $this->getOrder()->getOrderNumber();
-                // $msp->transaction['items'] = $items;
-                $msp->transaction['gateway'] = 'GIROPAY';
-                $msp->transaction['daysactive'] = $settings['daysactive'];
-                $msp->plugin_name = 'X-CART';
-                $msp->version = '1.0.0';
-                $msp->plugin['shop'] = 'X-Cart';
-                $msp->plugin['shop_version'] = 'VM_VERSION';
-                $msp->plugin['plugin_version'] = '1.0.0';
-                $msp->plugin['partner'] = '';
-                $msp->plugin['shop_root_url'] = '';
-                $url = $msp->startTransaction();
-
-                if ($msp->error) {
-                    \XLite\Core\TopMessage::addError("Error " . $msp->error_code . ": " . $msp->error);
-                } else {
-                    header('Location: ' . $url);
-                    exit;
-                }
-            } else {
-                \XLite\Core\TopMessage::addError('Unknown payment transaction');
-            }
-        //}
+        $processor = new \XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor\Ideal();
+        $processor->doTransactionRequest('', $transid, 'MultiSafepay Giropay', 'GIROPAY');
     }
 
-  
 
-    /**
-     * Get array of payment settings
-     *
-     * @return array
-     */
-    public function getGiropayPaymentSettings() {
-        $result = array();
-
-        $fields = $this->getAvailableSettings();
-        foreach ($fields as $field) {
-            $result[$field] = $this->getSetting($field);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Get payment method setting by name
-     *
-     * @param string $name Setting name
-     *
-     * @result string
-     */
-    protected function getSetting($name) {
-        $result = parent::getSetting($name);
-
-        if (is_null($result)) {
-            $method = \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->findOneBy(array('service_name' => 'MultiSafepay Giropay'));
-            $result = $method ? $method->getSetting($name) : null;
-        }
-
-        return $result;
-    }
 
     /**
      * Get redirect form URL

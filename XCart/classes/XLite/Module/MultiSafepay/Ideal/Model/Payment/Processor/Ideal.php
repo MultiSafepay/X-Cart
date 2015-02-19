@@ -6,6 +6,8 @@ namespace XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor;
 
 class Ideal extends \XLite\Model\Payment\Base\WebBased {
 
+    public $settings = 'MultiSafepay iDEAL';
+
     /**
      * Get operation types
      *
@@ -16,8 +18,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             self::OPERATION_SALE,
         );
     }
-    
-    
+
     protected $allowedCurrencies = array(
         'EUR', 'USD'
     );
@@ -49,7 +50,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
 
             require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
-            $settings = $this->getIdealPaymentSettings();
+            $settings = $this->getPaymentSettings($this->settings);
 
             $msp = new \MultiSafepay();
             $msp->test = $settings['environment'] != 'Y' ? false : true;
@@ -102,29 +103,30 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
                         break;
                 }
             }
-        } else {
-            $message = static::t('Transacion ID is missing, update aborted');
-        }
 
-        // Save data in order history
+            // Set transaction status
+            $this->transaction->setStatus($order_status);
 
-        if ($message) {
-            $data['message'] = $message;
-        }
-        
-        // Set transaction status
-        $this->transaction->setStatus($order_status);
-        
-        if(\XLite\Core\Request::getInstance()->redirect != 'true')
-        {
-            if(\XLite\Core\Request::getInstance()->type == 'initial'){
-                echo '<a href="'.$this->getReturnURL(null, true).'&redirect=true&transactionid='.\XLite\Core\Request::getInstance()->transactionid.'">Terug naar de webwinkel</a>';exit;
-            }elseif(\XLite\Core\Request::getInstance()->cancel == '1'){
-                $order_status = $transaction::STATUS_CANCELED;
-                $this->transaction->setStatus($order_status);
-            }else{
-                echo 'OK';exit;
+            if (\XLite\Core\Request::getInstance()->redirect != 'true') {
+                if (\XLite\Core\Request::getInstance()->type == 'initial') {
+                    echo '<a href="' . $this->getReturnURL(null, true) . '&redirect=true&transactionid=' . \XLite\Core\Request::getInstance()->transactionid . '">Terug naar de webwinkel</a>';
+                    exit;
+                } elseif (\XLite\Core\Request::getInstance()->cancel == '1') {
+                    $order_status = $transaction::STATUS_CANCELED;
+                    $this->transaction->setStatus($order_status);
+                } else {
+                    echo 'OK';
+                    exit;
+                }
             }
+        }
+        if (\XLite\Core\Request::getInstance()->error) {
+         
+            $order_status = $transaction::STATUS_FAILED;
+            $this->setDetail('status', 'Order canceled because of transaction request error:'."Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error, 'Status');
+            $this->transaction->setNote('Order canceled because of transaction request error:'."Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error);
+            $this->transaction->setStatus($order_status);
+            //\XLite\Core\TopMessage::addWarning("Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error);
         }
     }
 
@@ -218,68 +220,78 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
      *
      * @return void
      */
-    public function doTransactionRequest($issuerId, $transid) {
-        if ($issuerId) {
+    public function doTransactionRequest($issuerId, $transid, $settings = '', $gateway = '') {
+        if (!$this->transaction && $transid) {
+            $this->transaction = \XLite\Core\Database::getRepo('XLite\Model\Payment\Transaction')->findOneByPublicTxnId($transid);
+        }
+        if ($gateway == '') {
+            $gateway = 'IDEAL';
+        }
+        if ($settings != '') {
+            $this->settings = $settings;
+        }
 
-            if (!$this->transaction && $transid) {
-                $this->transaction = \XLite\Core\Database::getRepo('XLite\Model\Payment\Transaction')
-                        ->findOneByPublicTxnId($transid);
-            }
+        if ($this->transaction) {
+            $orderId = $this->getSetting('prefix') . $this->transaction->getPublicTxnId();
 
-            if ($this->transaction) {
-                $orderId = $this->getSetting('prefix') . $this->transaction->getPublicTxnId();
+            require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
-                require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
+            $settings = $this->getPaymentSettings($this->settings);
 
-                $settings = $this->getIdealPaymentSettings();
+            $msp = new \MultiSafepay();
+            $msp->test = $settings['environment'] != 'Y' ? false : true;
+            $msp->merchant['account_id'] = $settings['accountid'];
+            $msp->merchant['site_id'] = $settings['siteid'];
+            $msp->merchant['site_code'] = $settings['sitesecurecode'];
+            $msp->merchant['notification_url'] = $this->getReturnURL(null, true) . "&type=initial";
+            $msp->merchant['cancel_url'] = $this->getReturnURL(null, true, true);
+            $msp->merchant['redirect_url'] = $this->getReturnURL(null, true) . "&redirect=true";
+            $msp->customer['locale'] = strtoupper(\XLite\Core\Session::getInstance()->getLanguage()->getCode());
+            $msp->customer['firstname'] = $this->getProfile()->getBillingAddress()->getFirstname();
+            $msp->customer['lastname'] = $this->getProfile()->getBillingAddress()->getLastname();
+            $msp->customer['zipcode'] = $this->getProfile()->getBillingAddress()->getZipcode();
+            $msp->customer['state'] = '';
+            $msp->customer['city'] = $this->getProfile()->getBillingAddress()->getCity();
+            $msp->customer['country'] = strtoupper($this->getProfile()->getBillingAddress()->getCountry()->getCode());
+            $msp->customer['phone'] = $this->getProfile()->getBillingAddress()->getPhone();
+            $msp->customer['email'] = $this->getProfile()->getLogin();
+            $msp->customer['ipaddress'] = $_SERVER['REMOTE_ADDR'];
+            $msp->customer['forwardedip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            $msp->parseCustomerAddress($this->getProfile()->getBillingAddress()->getStreet());
 
-                $msp = new \MultiSafepay();
-                $msp->test = $settings['environment'] != 'Y' ? false : true;
-                $msp->merchant['account_id'] = $settings['accountid'];
-                $msp->merchant['site_id'] = $settings['siteid'];
-                $msp->merchant['site_code'] = $settings['sitesecurecode'];
-                $msp->merchant['notification_url'] = $this->getReturnURL(null, true) . "&type=initial";
-                $msp->merchant['cancel_url'] = $this->getReturnURL(null, true, true);
-                $msp->merchant['redirect_url'] = $this->getReturnURL(null, true)."&redirect=true";
-                $msp->customer['locale'] = strtoupper(\XLite\Core\Session::getInstance()->getLanguage()->getCode());
-                $msp->customer['firstname'] = $this->getProfile()->getBillingAddress()->getFirstname();
-                $msp->customer['lastname'] = $this->getProfile()->getBillingAddress()->getLastname();
-                $msp->customer['zipcode'] = $this->getProfile()->getBillingAddress()->getZipcode();
-                $msp->customer['state'] = '';
-                $msp->customer['city'] = $this->getProfile()->getBillingAddress()->getCity();
-                $msp->customer['country'] = strtoupper($this->getProfile()->getBillingAddress()->getCountry()->getCode());
-                $msp->customer['phone'] = $this->getProfile()->getBillingAddress()->getPhone();
-                $msp->customer['email'] = $this->getProfile()->getLogin();
-                $msp->customer['ipaddress'] = $_SERVER['REMOTE_ADDR'];
-                $msp->customer['forwardedip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                $msp->parseCustomerAddress($this->getProfile()->getBillingAddress()->getStreet()); 
-                
-                $msp->transaction['id'] = $orderId;
-                $msp->transaction['currency'] = strtoupper($this->getOrder()->getCurrency()->getCode());
-                $msp->transaction['amount'] = $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue())*100;
-                $msp->transaction['description'] = 'Order #' . $this->getOrder()->getOrderNumber();
-                // $msp->transaction['items'] = $items;
-                $msp->transaction['gateway'] = 'IDEAL';
-                $msp->transaction['daysactive'] = $settings['daysactive'];
-                $msp->plugin_name = 'X-CART';
-                $msp->version = '1.0.0';
-                $msp->plugin['shop'] = 'X-Cart';
-                $msp->plugin['shop_version'] = 'VM_VERSION';
-                $msp->plugin['plugin_version'] = '1.0.0';
-                $msp->plugin['partner'] = '';
-                $msp->plugin['shop_root_url'] = '';
+            $msp->transaction['id'] = $orderId;
+            $msp->transaction['currency'] = strtoupper($this->getOrder()->getCurrency()->getCode());
+            $msp->transaction['amount'] = $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue()) * 100;
+            $msp->transaction['description'] = 'Order #' . $this->getOrder()->getOrderNumber();
+            // $msp->transaction['items'] = $items;
+            $msp->transaction['gateway'] = $gateway;
+            $msp->transaction['daysactive'] = $settings['daysactive'];
+            $msp->plugin_name = 'X-CART';
+            $msp->version = '1.0.0';
+            $msp->plugin['shop'] = 'X-Cart';
+            $msp->plugin['shop_version'] = '5';
+            $msp->plugin['plugin_version'] = '1.0.0';
+            $msp->plugin['partner'] = '';
+            $msp->plugin['shop_root_url'] = '';
+            if ($issuerId != '') {
                 $msp->extravars = $issuerId;
                 $url = $msp->startDirectXMLTransaction();
-
-                if ($msp->error) {
-                    \XLite\Core\TopMessage::addError("Error " . $msp->error_code . ": " . $msp->error);
-                } else {
-                    header('Location: ' . $url);
-                    exit;
-                }
             } else {
-                \XLite\Core\TopMessage::addError('Unknown payment transaction');
+                $url = $msp->startTransaction();
             }
+
+
+            if ($msp->error) {
+                //\XLite\Core\TopMessage::addError("Error " . $msp->error_code . ": " . $msp->error);
+                $url = $this->getReturnURL(null, true) . '&error=' . $msp->error . '&error_code=' . $msp->error_code;
+                header('Location: ' . $url);
+                exit;
+            } else {
+                header('Location: ' . $url);
+                exit;
+            }
+        } else {
+            \XLite\Core\TopMessage::addError('Unknown payment transaction');
         }
     }
 
@@ -291,7 +303,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
     public function getIdealIssuers() {
         require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
-        $settings = $this->getIdealPaymentSettings();
+        $settings = $this->getPaymentSettings($this->settings);
 
         $msp = new \MultiSafepay();
         $msp->test = $settings['environment'] != 'Y' ? false : true;
@@ -308,8 +320,9 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
      *
      * @return array
      */
-    public function getIdealPaymentSettings() {
+    public function getPaymentSettings($settings) {
         $result = array();
+        $this->settings = $settings;
 
         $fields = $this->getAvailableSettings();
         foreach ($fields as $field) {
@@ -327,10 +340,11 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
      * @result string
      */
     protected function getSetting($name) {
+        $settings = $this->settings;
         $result = parent::getSetting($name);
 
         if (is_null($result)) {
-            $method = \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->findOneBy(array('service_name' => 'MultiSafepay iDEAL'));
+            $method = \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->findOneBy(array('service_name' => $this->settings));
             $result = $method ? $method->getSetting($name) : null;
         }
 
@@ -360,7 +374,6 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             'returnURL' => $this->getReturnURL(null, true),
         );
     }
-
 
     // {{{ Checkout
 

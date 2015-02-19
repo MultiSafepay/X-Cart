@@ -20,7 +20,7 @@ class Issuer extends \XLite\View\FormField\Select\Regular
         $processor = new \XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor\Ideal();
 
         $issuers  = $processor->getIdealIssuers();
-        $settings = $processor->getIdealPaymentSettings();
+        $settings = $processor->getPaymentSettings('MultiSafepay iDEAL');
         
         $sandbox = $settings['environment'] != 'Y' ? false : true;
         
