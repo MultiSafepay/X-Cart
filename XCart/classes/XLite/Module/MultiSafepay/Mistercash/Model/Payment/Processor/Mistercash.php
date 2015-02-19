@@ -200,6 +200,17 @@ class Mistercash extends \XLite\Model\Payment\Base\WebBased {
             'iid' => \XLite\Model\Payment\TransactionData::ACCESS_CUSTOMER,
         );
     }
+    
+    public function getIconPath(\XLite\Model\Order $order, \XLite\Model\Payment\Method $method) {
+        $processor = new \XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor\Ideal();
+        $processor->gateway = 'Mistercash';
+        $processor->icon = 'msp_mistercash.png';
+        return $processor->getIconPath($order, $method);
+    }
+
+    public function getCheckoutTemplate(\XLite\Model\Payment\Method $method) {
+        return 'modules/MultiSafepay/Ideal/checkout/gateway.tpl';
+    }
 
     // }}}
 }

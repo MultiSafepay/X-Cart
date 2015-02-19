@@ -7,6 +7,8 @@ namespace XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor;
 class Ideal extends \XLite\Model\Payment\Base\WebBased {
 
     public $settings = 'MultiSafepay iDEAL';
+    public $icon = 'msp_ideal.png';
+    public $gateway = 'Ideal';
 
     /**
      * Get operation types
@@ -385,6 +387,11 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
     public function getInputTemplate() {
         return 'modules/MultiSafepay/Ideal/checkout/ideal.tpl';
     }
+    
+    public function getCheckoutTemplate(\XLite\Model\Payment\Method $method)
+    {
+        return 'modules/MultiSafepay/Ideal/checkout/gateway.tpl';
+    }
 
     /**
      * Process input errors
@@ -425,6 +432,21 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
         return array(
             'iid' => \XLite\Model\Payment\TransactionData::ACCESS_CUSTOMER,
         );
+    }
+    
+    
+    
+    /**
+     * Get payment method icon path
+     *
+     * @param \XLite\Model\Order          $order  Order
+     * @param \XLite\Model\Payment\Method $method Payment method
+     *
+     * @return string
+     */
+    public function getIconPath(\XLite\Model\Order $order, \XLite\Model\Payment\Method $method)
+    {
+        return 'modules/MultiSafepay/'.$this->gateway.'/checkout/' . $this->icon;
     }
 
     // }}}
