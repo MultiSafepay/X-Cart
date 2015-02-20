@@ -53,7 +53,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
             $settings = $this->getPaymentSettings($this->settings);
-
+            
             $msp = new \MultiSafepay();
             $msp->test = $settings['environment'] != 'Y' ? false : true;
             $msp->merchant['account_id'] = $settings['accountid'];

@@ -41,6 +41,7 @@ class Banktransfer extends \XLite\Model\Payment\Base\WebBased {
     public function processReturn(\XLite\Model\Payment\Transaction $transaction) {
         parent::processReturn($transaction);
         $processor = new \XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor\Ideal();
+        $processor->settings = 'MultiSafepay Banktransfer';
         $processor->processReturn($transaction);
     }
 
