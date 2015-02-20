@@ -239,6 +239,18 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
             $settings = $this->getPaymentSettings($this->settings);
+            
+            
+            
+            $items = '<ul>';
+            
+            foreach ($this->getOrder()->getItems() as $item) {
+               // $Dwolla->addGatewayProduct($item->getName(), $item->getItemPrice());
+                $items .= '<li>'.$item->getAmount(). ' x '. $item->getName();
+            }
+            
+            $items.= '</ul>';
+
 
             $msp = new \MultiSafepay();
             $msp->test = $settings['environment'] != 'Y' ? false : true;
@@ -265,7 +277,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             $msp->transaction['currency'] = strtoupper($this->getOrder()->getCurrency()->getCode());
             $msp->transaction['amount'] = $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue()) * 100;
             $msp->transaction['description'] = 'Order #' . $this->getOrder()->getOrderNumber();
-            // $msp->transaction['items'] = $items;
+            $msp->transaction['items'] = $items;
             $msp->transaction['gateway'] = $gateway;
             $msp->transaction['daysactive'] = $settings['daysactive'];
             $msp->plugin_name = 'X-CART';
