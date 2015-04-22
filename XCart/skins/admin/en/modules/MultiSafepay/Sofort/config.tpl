@@ -27,7 +27,7 @@
       <label for="settings_pub_cert">{t(#Site Secure Code#)}</label>
     </td>
     <td>
-      <input type="text" id="settings_sitesecurecode" name="settings[sitesecurecode]" value="{paymentMethod.getSetting(#siteid#)}" class="validate[required,maxSize[255]]" />
+      <input type="text" id="settings_sitesecurecode" name="settings[sitesecurecode]" value="{paymentMethod.getSetting(#sitesecurecode#)}" class="validate[required,maxSize[255]]" />
     </td>
   </tr>
 

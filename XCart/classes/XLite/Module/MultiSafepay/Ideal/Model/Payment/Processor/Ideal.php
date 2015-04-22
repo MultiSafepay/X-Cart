@@ -53,7 +53,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
             $settings = $this->getPaymentSettings($this->settings);
-            
+
             $msp = new \MultiSafepay();
             $msp->test = $settings['environment'] != 'Y' ? false : true;
             $msp->merchant['account_id'] = $settings['accountid'];
@@ -123,10 +123,10 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             }
         }
         if (\XLite\Core\Request::getInstance()->error) {
-         
+
             $order_status = $transaction::STATUS_FAILED;
-            $this->setDetail('status', 'Order canceled because of transaction request error:'."Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error, 'Status');
-            $this->transaction->setNote('Order canceled because of transaction request error:'."Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error);
+            $this->setDetail('status', 'Order canceled because of transaction request error:' . "Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error, 'Status');
+            $this->transaction->setNote('Order canceled because of transaction request error:' . "Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error);
             $this->transaction->setStatus($order_status);
             //\XLite\Core\TopMessage::addWarning("Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error);
         }
@@ -239,18 +239,13 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'Ideal' . LC_DS . 'lib' . LC_DS . 'MultiSafepay.combined.php';
 
             $settings = $this->getPaymentSettings($this->settings);
-            
-            
-            
-            $items = '<ul>';
-            
-            foreach ($this->getOrder()->getItems() as $item) {
-               // $Dwolla->addGatewayProduct($item->getName(), $item->getItemPrice());
-                $items .= '<li>'.$item->getAmount(). ' x '. $item->getName();
-            }
-            
-            $items.= '</ul>';
 
+            $items = '<ul>';
+            foreach ($this->getOrder()->getItems() as $item) {
+                $product = $item->getProduct();
+                $items .= '<li>' . $item->getAmount() . ' x ' . $product->getName();
+            }
+            $items.= '</ul>';
 
             $msp = new \MultiSafepay();
             $msp->test = $settings['environment'] != 'Y' ? false : true;
@@ -399,9 +394,8 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
     public function getInputTemplate() {
         return 'modules/MultiSafepay/Ideal/checkout/ideal.tpl';
     }
-    
-    public function getCheckoutTemplate(\XLite\Model\Payment\Method $method)
-    {
+
+    public function getCheckoutTemplate(\XLite\Model\Payment\Method $method) {
         return 'modules/MultiSafepay/Ideal/checkout/gateway.tpl';
     }
 
@@ -445,9 +439,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             'iid' => \XLite\Model\Payment\TransactionData::ACCESS_CUSTOMER,
         );
     }
-    
-    
-    
+
     /**
      * Get payment method icon path
      *
@@ -456,9 +448,8 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
      *
      * @return string
      */
-    public function getIconPath(\XLite\Model\Order $order, \XLite\Model\Payment\Method $method)
-    {
-        return 'modules/MultiSafepay/'.$this->gateway.'/checkout/' . $this->icon;
+    public function getIconPath(\XLite\Model\Order $order, \XLite\Model\Payment\Method $method) {
+        return 'modules/MultiSafepay/' . $this->gateway . '/checkout/' . $this->icon;
     }
 
     // }}}
