@@ -248,7 +248,7 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
             $msp->merchant['notification_url'] = $this->getReturnURL(null, true) . "&type=initial";
             $msp->merchant['cancel_url'] = $this->getReturnURL(null, true, true);
             $msp->merchant['redirect_url'] = $this->getReturnURL(null, true) . "&redirect=true";
-            $msp->customer['locale'] = strtoupper(\XLite\Core\Session::getInstance()->getLanguage()->getCode());
+            $msp->customer['locale'] = strtolower(\XLite\Core\Session::getInstance()->getLanguage()->getCode()).'-'.strtoupper(\XLite\Core\Session::getInstance()->getLanguage()->getCode());
             $msp->customer['firstname'] = $this->getProfile()->getBillingAddress()->getFirstname();
             $msp->customer['lastname'] = $this->getProfile()->getBillingAddress()->getLastname();
             $msp->customer['zipcode'] = $this->getProfile()->getBillingAddress()->getZipcode();
@@ -259,6 +259,8 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
             $msp->customer['email'] = $this->getProfile()->getLogin();
             $msp->customer['ipaddress'] = $_SERVER['REMOTE_ADDR'];
             $msp->customer['forwardedip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            $msp->customer['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+            $msp->customer['referrer'] = $_SERVER['HTTP_REFERER'];
             $msp->parseCustomerAddress($this->getProfile()->getBillingAddress()->getStreet());
 
             $msp->transaction['id'] = $orderId;
@@ -268,10 +270,10 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
             $msp->transaction['items'] = $items;
             $msp->transaction['gateway'] = 'PAYAFTER';
             $msp->transaction['daysactive'] = $settings['daysactive'];
-            $msp->plugin_name = 'X-CART';
+            $msp->plugin_name = 'X-CART ('.\Doctrine\Common\Version::VERSION.')';
             $msp->version = '1.0.0';
             $msp->plugin['shop'] = 'X-Cart';
-            $msp->plugin['shop_version'] = 'VM_VERSION';
+            $msp->plugin['shop_version'] = \Doctrine\Common\Version::VERSION;
             $msp->plugin['plugin_version'] = '1.0.0';
             $msp->plugin['partner'] = '';
             $msp->plugin['shop_root_url'] = '';
