@@ -20,6 +20,19 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             self::OPERATION_SALE,
         );
     }
+    
+    /**
+     * Get allowed backend transactions
+     *
+     * @return string Status code
+     */
+    /*public function getAllowedTransactions()
+    {
+        return array(
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND,
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND_PART,
+        );
+    }*/
 
     protected $allowedCurrencies = array(
         'EUR', 'USD'
@@ -63,7 +76,6 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             $status = $msp->getStatus();
             $details = $msp->details;
 
-
             if ($msp->error) {
                 $message .= "Error " . $msp->error_code . ": " . $msp->error . PHP_EOL;
             } else {
@@ -84,12 +96,14 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
                         $order_status = \XLite\Model\Order\Status\Payment::STATUS_DECLINED;
                         break;
                     case "refunded":
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_REFUNDED;
+                        $this->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_REFUNDED);
+                        $this->getOrder()->updateOrder();
+                        $order_status = $transaction::STATUS_CANCELED;
                         break;
                     case "partial_refunded":
-                        $this->setDetail('status', 'Transaction is partially refunded', 'Status');
-                        $this->transaction->setNote('Transaction is partially refunded');
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_REFUNDED;
+                        $order_status = $transaction::STATUS_PENDING;
+                        $this->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_PART_PAID);
+                        $this->getOrder()->updateOrder();
                         break;
                     case "expired":
                         $order_status = $transaction::STATUS_CANCELED;
@@ -108,7 +122,11 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
 
             // Set transaction status
             $this->transaction->setStatus($order_status);
-
+            $this->transaction->update();
+            
+            
+            
+            
             if (\XLite\Core\Request::getInstance()->redirect != 'true') {
                 if (\XLite\Core\Request::getInstance()->type == 'initial') {
                     echo '<a href="' . $this->getReturnURL(null, true) . '&redirect=true&transactionid=' . \XLite\Core\Request::getInstance()->transactionid . '">Terug naar de webwinkel</a>';
@@ -131,6 +149,48 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             //\XLite\Core\TopMessage::addWarning("Error " . \XLite\Core\Request::getInstance()->error_code . ": " . \XLite\Core\Request::getInstance()->error);
         }
     }
+    
+    
+    /**
+     * Do 'CREDIT' request.
+     * Returns true on success or false on failure
+     *
+     * @param \XLite\Model\Payment\BackendTransaction $transaction Transaction
+     *
+     * @return boolean
+     */
+    protected function doRefund(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        $result = false;
+        return false;
+        
+        //Implement refund api in next release
+        
+        
+        $responseData = $this->doRequest('Credit', $transaction);
+
+        if (!empty($responseData)) {
+            $status = \XLite\Model\Payment\Transaction::STATUS_FAILED;
+
+            if ('0' == $responseData['RESULT']) {
+                $result = true;
+                $status = \XLite\Model\Payment\Transaction::STATUS_SUCCESS;
+
+                \XLite\Core\TopMessage::getInstance()->addInfo('Payment has been refunded successfully');
+
+            } else {
+                \XLite\Core\TopMessage::getInstance()
+                    ->addError('Transaction failure. PayPal response: ' . $responseData['RESPMSG']);
+            }
+
+            $transaction->setStatus($status);
+            $transaction->update();
+        }
+
+        return $result;
+    }
+    
+    
 
     /**
      * Get initial transaction type (used when customer places order)
