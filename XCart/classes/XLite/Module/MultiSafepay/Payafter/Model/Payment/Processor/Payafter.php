@@ -80,12 +80,14 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
                         $order_status = \XLite\Model\Order\Status\Payment::STATUS_DECLINED;
                         break;
                     case "refunded":
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_REFUNDED;
+                        $this->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_REFUNDED);
+                        $this->getOrder()->updateOrder();
+                        $order_status = $transaction::STATUS_CANCELED;
                         break;
                     case "partial_refunded":
-                        $this->setDetail('status', 'Transaction is partially refunded', 'Status');
-                        $this->transaction->setNote('Transaction is partially refunded');
-                        $order_status = \XLite\Model\Order\Status\Payment::STATUS_REFUNDED;
+                        $order_status = $transaction::STATUS_PENDING;
+                        $this->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_PART_PAID);
+                        $this->getOrder()->updateOrder();
                         break;
                     case "expired":
                         $order_status = $transaction::STATUS_CANCELED;
@@ -104,6 +106,7 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
 
             // Set transaction status
             $this->transaction->setStatus($order_status);
+            $this->transaction->update();
 
             if (\XLite\Core\Request::getInstance()->redirect != 'true') {
                 if (\XLite\Core\Request::getInstance()->type == 'initial') {
