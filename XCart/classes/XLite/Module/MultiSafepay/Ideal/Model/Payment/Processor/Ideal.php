@@ -269,11 +269,10 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             $msp->customer['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
             $msp->customer['referrer'] = $_SERVER['HTTP_REFERER'];
             $msp->parseCustomerAddress($this->getProfile()->getBillingAddress()->getStreet());
-
             $msp->transaction['id'] = $orderId;
             $msp->transaction['currency'] = strtoupper($this->getOrder()->getCurrency()->getCode());
             $msp->transaction['amount'] = $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue()) * 100;
-            $msp->transaction['description'] = 'Order #' . $this->getOrder()->getOrderNumber();
+            $msp->transaction['description'] = $this->getInvoiceDescription();
             $msp->transaction['items'] = $items;
             $msp->transaction['gateway'] = $gateway;
             $msp->transaction['daysactive'] = $settings['daysactive'];

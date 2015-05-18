@@ -266,7 +266,7 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
             $msp->transaction['id'] = $orderId;
             $msp->transaction['currency'] = strtoupper($this->getOrder()->getCurrency()->getCode());
             $msp->transaction['amount'] = $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue()) * 100;
-            $msp->transaction['description'] = 'Order #' . $this->getOrder()->getOrderNumber();
+             $msp->transaction['description'] = $this->getInvoiceDescription();
             $msp->transaction['items'] = $items;
             $msp->transaction['gateway'] = 'PAYAFTER';
             $msp->transaction['daysactive'] = $settings['daysactive'];
