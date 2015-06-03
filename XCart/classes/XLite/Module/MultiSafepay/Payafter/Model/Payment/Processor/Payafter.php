@@ -346,11 +346,12 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
                 }
             }
 
-
-            //add shipping rate
-            $ShipCost = $currency->roundValue($this->getOrder()->getSurchargeSumByType(\XLite\Model\Base\Surcharge::TYPE_SHIPPING));
-            if ($ShipCost > 0) {
-                $c_item = new \MspItem('Shipping', '', '1', $ShipCost, 'KG', '0');
+            //add shipping cost to transaction request
+            $shipping_name = $this->getOrder()->shipping_method_name;
+            $shipping_cost = $this->getOrder()->getSurchargeSumByType(\XLite\Model\Base\Surcharge::TYPE_SHIPPING);
+            
+            if ($shipping_cost > 0) {
+                $c_item = new \MspItem($shipping_name, '', '1', $ShipCost, 'KG', '0');
                 $c_item->SetMerchantItemId('msp-shipping');
                 $c_item->SetTaxTableSelector('msp-shipping');
                 $msp->cart->AddItem($c_item);
@@ -369,7 +370,7 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
             $handling = $currency->roundValue($this->getOrder()->getSurchargeSumByType(\XLite\Model\Base\Surcharge::TYPE_HANDLING));
             if ($handling > 0) {
                 $c_item = new \MspItem('Payment Cost', '', '1', $handling, 'KG', '0');
-                $c_item->SetMerchantItemId('msp-payment');
+                $c_item->SetMerchantItemId('payment-fee');
                 $c_item->SetTaxTableSelector('BTW0');
                 $msp->cart->AddItem($c_item);
             }
@@ -384,7 +385,7 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
             }
 
             $url = $msp->startCheckout();
-
+            
             if ($msp->error) {
                 //\XLite\Core\TopMessage::addError("Error " . $msp->error_code . ": " . $msp->error);
                 $url = $this->getReturnURL(null, true) . '&error=' . $msp->error . '&error_code=' . $msp->error_code;
