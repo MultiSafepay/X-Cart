@@ -221,7 +221,9 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
      *
      * @return void
      */
-    public function doTransactionRequest($issuerId, $transid) {
+    //public function doTransactionRequest($issuerId, $transid) {
+	    
+    public function doInitialPayment(){
         //if ($issuerId) {
 
         if (!$this->transaction && $transid) {
@@ -351,7 +353,7 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased {
             $shipping_cost = $this->getOrder()->getSurchargeSumByType(\XLite\Model\Base\Surcharge::TYPE_SHIPPING);
             
             if ($shipping_cost > 0) {
-                $c_item = new \MspItem($shipping_name, '', '1', $ShipCost, 'KG', '0');
+                $c_item = new \MspItem($shipping_name, '', '1', $shipping_cost, 'KG', '0');
                 $c_item->SetMerchantItemId('msp-shipping');
                 $c_item->SetTaxTableSelector('msp-shipping');
                 $msp->cart->AddItem($c_item);
