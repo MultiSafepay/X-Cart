@@ -337,10 +337,10 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased {
             $msp->transaction['gateway'] = $gateway;
             $msp->transaction['daysactive'] = $settings['daysactive'];
             $msp->plugin_name = 'X-CART ('.\Doctrine\Common\Version::VERSION.')';
-            $msp->version = '1.0.0';
+            $msp->version = '2.0.0';
             $msp->plugin['shop'] = 'X-Cart';
             $msp->plugin['shop_version'] = \Doctrine\Common\Version::VERSION;
-            $msp->plugin['plugin_version'] = '1.0.0';
+            $msp->plugin['plugin_version'] = '2.0.0';
             $msp->plugin['partner'] = '';
             $msp->plugin['shop_root_url'] = '';
             if ($issuerId != '') {
