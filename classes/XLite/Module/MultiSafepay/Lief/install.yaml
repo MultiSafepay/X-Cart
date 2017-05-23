@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Lief Kadokaart
+    class: Module\MultiSafepay\Lief\Model\Payment\Processor\Lief
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Lief Kadokaart
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

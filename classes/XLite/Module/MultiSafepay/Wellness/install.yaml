@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Wellness Giftcard
+    class: Module\MultiSafepay\Wellness\Model\Payment\Processor\Wellness
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Wellness Giftcard
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

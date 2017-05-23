@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Boekenbon
+    class: Module\MultiSafepay\Boekenbon\Model\Payment\Processor\Boekenbon
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Boekenbon
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

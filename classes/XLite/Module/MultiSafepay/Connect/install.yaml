@@ -1,0 +1,31 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Connect
+    class: Module\MultiSafepay\Connect\Model\Payment\Processor\Connect
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Connect
+    settings:
+      - name: account_type
+        value: 0
+      - name: api_key
+      - name: auto_redirect
+        value: 1
+      - name: transaction_type
+        value: 0
+      - name: days_active
+        value: 30
+      - name: ga_accountid
+        value: UA
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "account_type", translations: [{ code: en, label: "Account type" }] }
+  - { name: "api_key", translations: [{ code: en, label: "API Key" }] }
+  - { name: "auto_redirect", translations: [{ code: en, label: "Automatic redirect" }] }
+  - { name: "transaction_type", translations: [{ code: en, label: "Enable direct transaction" }] }  
+  - { name: "days_active", translations: [{ code: en, label: "Days Active" }] }
+  - { name: "ga_accountid", translations: [{ code: en, label: "Google Analytics ID" }] }
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

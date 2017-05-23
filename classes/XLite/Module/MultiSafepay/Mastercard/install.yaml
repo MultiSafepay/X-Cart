@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Mastercard
+    class: Module\MultiSafepay\Mastercard\Model\Payment\Processor\Mastercard
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Mastercard
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Gezondheidsbon
+    class: Module\MultiSafepay\Gezondheidsbon\Model\Payment\Processor\Gezondheidsbon
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Gezondheidsbon
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }
