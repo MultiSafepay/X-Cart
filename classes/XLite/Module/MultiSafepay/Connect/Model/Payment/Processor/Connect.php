@@ -157,7 +157,8 @@ class Connect extends \XLite\Model\Payment\Base\WebBased
                 }
             }
         } catch (Exception $e) {
-            
+            \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
+            return  false;
         }
     }
 
@@ -373,7 +374,8 @@ class Connect extends \XLite\Model\Payment\Base\WebBased
                 header('Location: ' . $url);
                 exit;
             } catch (\Exception $e) {
-                
+                \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
+				return  false;
             }
         }
     }

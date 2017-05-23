@@ -281,7 +281,8 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                 header('Location: ' . $msp->orders->getPaymentLink());
                 exit;
             } catch (Exception $e) {
-                
+                \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
+				return  false;
             }
         }
     }
@@ -670,7 +671,8 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                 return null;
             }
         } catch (Exception $e) {
-            
+            \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
+			return  false;
         }
     }
 
