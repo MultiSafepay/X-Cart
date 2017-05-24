@@ -120,8 +120,6 @@ class Client
             curl_setopt($ch, CURLOPT_POSTFIELDS, $http_body);
         }
 
-        //mail('sonny@multisafepay.com', 'test', print_r($http_body, true));
-
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($ch, CURLOPT_ENCODING, "");
