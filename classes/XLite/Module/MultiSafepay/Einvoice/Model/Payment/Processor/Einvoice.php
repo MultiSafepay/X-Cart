@@ -519,7 +519,7 @@ class Einvoice extends \XLite\Model\Payment\Base\WebBased
     public function getInputTemplate()
     {
         if ($this->getSetting('transaction_type') == '1') {
-            return 'modules/MultiSafepay/Einvoice/checkout/Einvoice.twig';
+            return 'modules/MultiSafepay/Einvoice/checkout/einvoice.twig';
         }
     }
 

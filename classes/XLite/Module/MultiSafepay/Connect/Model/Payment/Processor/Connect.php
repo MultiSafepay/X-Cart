@@ -55,11 +55,8 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'API' . LC_DS . 'Autoloader.php';        
         parent::processReturn($transaction);
         
-        $message=   '';
-        $data   =   array();
         try{
             if (\XLite\Core\Request::getInstance()->transactionid) {
-                $status = $transaction::STATUS_FAILED;
                 
                 $settings = $this->getPaymentSettings($this->settings);
                 if($this->getSetting('transaction_type') == '1')
