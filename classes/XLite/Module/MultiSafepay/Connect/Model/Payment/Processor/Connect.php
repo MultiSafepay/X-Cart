@@ -299,7 +299,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                             "close_window"      =>  false
                         ),
                         "customer"  => array(
-                            "locale"        =>  strtolower(\XLite\Core\Session::getInstance()->getLanguage()->getCode()),
+                            "locale"        =>  $this->getLocaleFromLanguageCode(strtolower(\XLite\Core\Session::getInstance()->getLanguage()->getCode())),
                             "ip_address"    =>  $this->getClientIP(),
                             "forwarded_ip"  =>  $_SERVER['HTTP_X_FORWARDED_FOR'],
                             "first_name"    =>  $this->getProfile()->getBillingAddress()->getFirstname(),
@@ -361,6 +361,45 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
             }
         }
     }
+    
+    /**
+     * Convert language_code to locale
+     * 
+     * @param type $language_code
+     * @return type
+     */
+    
+    public function getLocaleFromLanguageCode($language_code)
+    {
+        $locale_array = array
+            (
+            'nl' => 'nl_NL',
+            'en' => 'en_GB',
+            'fr' => 'fr_FR',
+            'es' => 'es_ES',
+            'de' => 'de_DE',
+            'it' => 'it_IT',
+            'sv' => 'sv_SE',
+            'tr' => 'tr_TR',
+            'cs' => 'cs_CS',
+            'pl' => 'pl_PL',
+            'pt' => 'pt_PT',
+            'he' => 'he_HE',
+            'ru' => 'ru_RU',
+            'ar' => 'ar_AR',
+            'cn' => 'zh_CN',
+            'ro' => 'ro_RO',
+            'da' => 'da_DA',
+            'fi' => 'fi_FI',
+            'no' => 'no_NO'
+        );
+
+        if (array_key_exists($language_code, $locale_array)) {
+            return $locale_array[$language_code];
+        } else {
+            return null;
+        }
+    }    
 
     /**
      * Return the API Url based on the account type specified
