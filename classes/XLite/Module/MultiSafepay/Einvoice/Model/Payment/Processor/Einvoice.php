@@ -344,7 +344,12 @@ class Einvoice extends \XLite\Model\Payment\Base\WebBased
                             ->andWhere($where_clause)->getQuery()->getResult();
             if (!is_null($result)) {
                 foreach ($result as $r) {
-                    $tax_table_selector = $r->getTaxClass()->getTranslation()->getName();
+                    if(!is_null($r->getTaxClass()))
+                    {
+                        $tax_table_selector =   $r->getTaxClass()->getTranslation()->getName();
+                    }else{
+                        $tax_table_selector =   "BTW0";                        
+                    }
                 }
             } else {
                 $tax_table_selector = "BTW0";
