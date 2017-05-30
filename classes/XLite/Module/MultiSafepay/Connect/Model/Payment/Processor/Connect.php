@@ -381,15 +381,15 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
             'it' => 'it_IT',
             'sv' => 'sv_SE',
             'tr' => 'tr_TR',
-            'cs' => 'cs_CS',
+            'cs' => 'cs_CZ',
             'pl' => 'pl_PL',
             'pt' => 'pt_PT',
-            'he' => 'he_HE',
+            'he' => 'he_IL',
             'ru' => 'ru_RU',
             'ar' => 'ar_AR',
             'cn' => 'zh_CN',
             'ro' => 'ro_RO',
-            'da' => 'da_DA',
+            'da' => 'da_DK',
             'fi' => 'fi_FI',
             'no' => 'no_NO'
         );
