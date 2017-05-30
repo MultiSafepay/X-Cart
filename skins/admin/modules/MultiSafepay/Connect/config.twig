@@ -23,20 +23,6 @@
     </td>
   </tr>
 
-
-
-  <tr>
-    <td class="setting-name">
-      <label for="settings_auto_redirect">{{ t('Enable redirect') }}</label>
-    </td>
-    <td>
-      <select id="settings_auto_redirect" name='settings[auto_redirect]'>
-        <option value="0" {% if this.isSelected(this.paymentMethod.getSetting('auto_redirect'), '0') %} selected="selected" {% endif %}>{{ t('Disable') }}</option>
-        <option value="1" {% if this.isSelected(this.paymentMethod.getSetting('auto_redirect'), '1') %} selected="selected" {% endif %}>{{ t('Enable') }}</option>
-      </select>
-    </td>
-  </tr>	
-
   <tr>
     <td class="setting-name">
       <label for="settings_transaction_type">{{ t('Enable direct transaction') }}</label>

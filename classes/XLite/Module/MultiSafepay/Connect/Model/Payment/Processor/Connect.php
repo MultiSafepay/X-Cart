@@ -194,7 +194,6 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         return array(
             'account_type',
             'api_key',
-            'auto_redirect',
             'days_active',
             'ga_accountid',
             'prefix'
