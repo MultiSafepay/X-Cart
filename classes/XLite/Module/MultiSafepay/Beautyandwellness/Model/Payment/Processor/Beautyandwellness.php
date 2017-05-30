@@ -169,7 +169,7 @@ class Beautyandwellness extends \XLite\Model\Payment\Base\WebBased
     public function doTransactionRequest($issuerId, $transid)
     {
         $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->startTransaction('', $transid, 'MultiSafepay Connect', 'BLOEMENCADEAU');
+        $processor->startTransaction('', $transid, 'MultiSafepay Connect', 'BEAUTYANDWELLNESS');
     }
 
     /**
