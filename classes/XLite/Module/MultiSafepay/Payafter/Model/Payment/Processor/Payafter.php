@@ -397,34 +397,36 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased
 
         $shipping = $this->getOrder()->getSelectedShippingRate();
 
-        $where_clause = 's.method_id = ' . $shipping->getMethodId();
-        $result = \XLite\Core\Database::getRepo('\XLite\Model\Shipping\Method')
-                        ->createQueryBuilder('s')
-                        ->andWhere($where_clause)->getQuery()->getResult();
+		if(!is_null($shipping))
+		{
+			$where_clause = 's.method_id = ' . $shipping->getMethodId();
+			$result = \XLite\Core\Database::getRepo('\XLite\Model\Shipping\Method')
+							->createQueryBuilder('s')
+							->andWhere($where_clause)->getQuery()->getResult();
 
-        if (!is_null($result)) {
-            foreach ($result as $r) {
-                $tax_table_selector = $r->getTaxClass()->getTranslation()->getName();
-            }
-        } else {
-            $tax_table_selector = "BTW0";
-        }
+			if (!is_null($result)) {
+				foreach ($result as $r) {
+					$tax_table_selector = $r->getTaxClass()->getTranslation()->getName();
+				}
+			} else {
+				$tax_table_selector = "BTW0";
+			}
 
-        $shoppingcart_array['items'][] = array
-            (
-            "name" => $shipping->getMethodName(),
-            "description" => $shipping->getMethodName(),
-            "unit_price" => $currency->roundValue($shipping->getTotalRate()),
-            "quantity" => 1,
-            "merchant_item_id" => "msp-shipping",
-            "tax_table_selector" => $tax_table_selector,
-            "weight" => array
-                (
-                "unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
-                "value" => 0
-            )
-        );
-
+			$shoppingcart_array['items'][] = array
+				(
+				"name" => $shipping->getMethodName(),
+				"description" => $shipping->getMethodName(),
+				"unit_price" => $currency->roundValue($shipping->getTotalRate()),
+				"quantity" => 1,
+				"merchant_item_id" => "msp-shipping",
+				"tax_table_selector" => $tax_table_selector,
+				"weight" => array
+					(
+					"unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
+					"value" => 0
+				)
+			);
+		}
 
         return $shoppingcart_array;
     }
