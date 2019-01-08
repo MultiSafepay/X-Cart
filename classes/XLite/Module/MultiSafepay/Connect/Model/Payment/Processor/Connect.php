@@ -79,12 +79,9 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                         break;
                     case "completed":
                         $order_status = $transaction::STATUS_SUCCESS;
-                        $this->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_PAID);
-                        $this->getOrder()->updateOrder();                        
                         break;
                     case "uncleared":
                         $order_status = $transaction::STATUS_PENDING;
-                        //$order_status = $transaction::STATUS_SUCCESS;
                         break;
                     case "void":
                         $order_status = $transaction::STATUS_VOID;
@@ -109,13 +106,12 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                         $order_status = $transaction::STATUS_CANCELED;
                         break;
                     case "shipped":
-                        //don't do anything for status shipped.
-                        //$order_status = $transaction::STATUS_SUCCESS;
                         break;
                 }
                 
                 $this->transaction->setStatus($order_status);
                 $this->transaction->update();
+
                 if (\XLite\Core\Request::getInstance()->redirect == 'true') {
                     if (\XLite\Core\Request::getInstance()->type == 'initial') {
                         echo '<a href="' . $this->getReturnURL(null, true) . '&redirect=true&transactionid=' . \XLite\Core\Request::getInstance()->transactionid . '">Return to the webshop</a>';
@@ -344,7 +340,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                         )
                         //\XLite\Core\Config::getInstance()->Version->version,
                     ));
-                    
+
                     if($trans_type  ==  'direct' && in_array($gateway, $this->directGateways()))
                     {
                         $url    =   \XLite\Core\Request::getInstance()->returnURL . '&redirect=true&transactionid=' . \XLite\Core\Request::getInstance()->transid;
