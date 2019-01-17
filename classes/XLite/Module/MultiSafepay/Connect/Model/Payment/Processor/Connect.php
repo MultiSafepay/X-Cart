@@ -734,4 +734,15 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         return $checkoutoptions_array;
     }
 
+    function in_array_recursive($needle, $haystack, $strict = false)
+    {
+        foreach ($haystack as $item) {
+            if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && $this->in_array_recursive($needle, $item, $strict))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }
