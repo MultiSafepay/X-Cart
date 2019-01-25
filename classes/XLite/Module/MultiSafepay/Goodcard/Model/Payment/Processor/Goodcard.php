@@ -71,7 +71,6 @@ class Goodcard extends \XLite\Model\Payment\Base\WebBased
     {
         parent::processReturn($transaction);
         $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->settings = 'MultiSafepay Goodcard';
         $processor->processReturn($transaction);
     }
 

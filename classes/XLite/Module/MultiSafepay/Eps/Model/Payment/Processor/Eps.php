@@ -71,7 +71,6 @@ class Eps extends \XLite\Model\Payment\Base\WebBased
     {
         parent::processReturn($transaction);
         $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->settings = 'MultiSafepay EPS';
         $processor->processReturn($transaction);
     }
 

@@ -71,7 +71,6 @@ class Dirdeb extends \XLite\Model\Payment\Base\WebBased
     {
         parent::processReturn($transaction);
         $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->settings = 'MultiSafepay Connect';
         $processor->processReturn($transaction);
     }
 
