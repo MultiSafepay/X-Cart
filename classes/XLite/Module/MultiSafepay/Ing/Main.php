@@ -43,7 +43,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getModuleName()
     {
-        return 'MultiSafepay ING HomePay';
+        return 'MultiSafepay ING Home\'Pay';
     }
 
     /**
@@ -73,7 +73,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getDescription()
     {
-        return 'Enables MultiSafepay ING HomePay transactions';
+        return 'Enables MultiSafepay ING Home\'Pay transactions';
     }
 
     /**

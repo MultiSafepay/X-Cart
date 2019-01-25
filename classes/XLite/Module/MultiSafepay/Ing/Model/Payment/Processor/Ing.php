@@ -171,7 +171,7 @@ class Ing extends \XLite\Model\Payment\Base\WebBased
     public function doTransactionRequest($transid)
     {
         $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->startTransaction('', $transid, 'MultiSafepay ING HomePay', 'ING');
+        $processor->startTransaction('', $transid, 'MultiSafepay Connect', 'INGHOME');
     }
 
     /**
@@ -206,7 +206,7 @@ class Ing extends \XLite\Model\Payment\Base\WebBased
     public function getIconPath(\XLite\Model\Order $order = null, \XLite\Model\Payment\Method $method = null)
     {
         $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->gateway = 'Ing';
+        $processor->gateway = 'INGHOME';
         $processor->icon = 'msp_ing.png';
         return $processor->getIconPath($order, $method);
     }
