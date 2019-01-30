@@ -271,76 +271,68 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                 $msp->setApiUrl($this->getEnvironment());                
                 list($billing_street, $billing_housenumber) = $this->parseAddress($this->getProfile()->getBillingAddress()->getStreet());
                 list($shipping_street, $shipping_housenumber) = $this->parseAddress($this->getProfile()->getShippingAddress()->getStreet());
-				
-                $msp->orders->post(array(
-                        "type"      =>  $trans_type,
-                        "order_id"  =>  $orderId,
-                        "currency"  =>  strtoupper($this->getOrder()->getCurrency()->getCode()),
-                        "amount"    =>  $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue()) * 100,
-                        "gateway"   =>  $gateway,
-                        "description"=> $this->getInvoiceDescription(),
-                        "var1"      =>  null,
-                        "var2"      =>  null,
-                        "var3"      =>  null,
-                        "items"     =>  $items_list,
-                        "manual"    =>  null,
-                        "days_active"=> $this->getSetting('days_active'),
-                        "payment_options"=> array(
-                            "notification_url"  =>  $this->getReturnURL(null, true) . "&type=initial",
-                            "redirect_url"      =>  $this->getReturnURL(null, true) . '&redirect=true',
-                            "cancel_url"        =>  \XLite::getInstance()->getShopURL(\XLite\Core\Converter::buildURL('checkout'), 
-                                                        \XLite\Core\Config::getInstance()->Security->customer_security
-                                                    ),
-                            "close_window"      =>  false
-                        ),
-                        "customer"  => array(
-                            "locale"        =>  $this->getLocaleFromLanguageCode(strtolower(\XLite\Core\Session::getInstance()->getLanguage()->getCode())),
-                            "ip_address"    =>  $this->getClientIP(),
-                            "forwarded_ip"  =>  $_SERVER['HTTP_X_FORWARDED_FOR'],
-                            "first_name"    =>  $this->getProfile()->getBillingAddress()->getFirstname(),
-                            "last_name"     =>  $this->getProfile()->getBillingAddress()->getLastname(),
-                            "address1"      =>  $billing_street,
-                            "address2"      =>  null,
-                            "house_number"  =>  $billing_housenumber,
-                            "zip_code"      =>  $this->getProfile()->getBillingAddress()->getZipcode(),
-                            "city"          =>  $this->getProfile()->getBillingAddress()->getCity(),
-                            "state"         =>  null,
-                            "country"       =>  strtoupper($this->getProfile()->getBillingAddress()->getCountry()->getCode()),
-                            "phone"         =>  $this->getProfile()->getBillingAddress()->getPhone(),
-                            "email"         =>  $this->getProfile()->getLogin(),
-                            "disable_send_email"=> false,
-                            "user_agent"    =>  $_SERVER['HTTP_USER_AGENT'],
-                            "referrer"      =>  $_SERVER['HTTP_REFERER']
-                        ),
-                        "delivery"  =>  array(
-                            "first_name"    =>  $this->getProfile()->getShippingAddress()->getFirstname(),
-                            "last_name"     =>  $this->getProfile()->getShippingAddress()->getLastname(),
-                            "address1"      =>  $shipping_street,
-                            "address2"      =>  null,
-                            "house_number"  =>  $shipping_housenumber,
-                            "zip_code"      =>  $this->getProfile()->getShippingAddress()->getZipcode(),
-                            "city"          =>  $this->getProfile()->getShippingAddress()->getCity(),
-                            "state"         =>  null,
-                            "country"       =>  strtoupper($this->getProfile()->getShippingAddress()->getCountry()->getCode()),
-                            "phone"         =>  $this->getProfile()->getShippingAddress()->getPhone(),
-                            "email"         =>  $this->getProfile()->getLogin()            
-                        ),
-                        "gateway_info"=>    array(
-                            "issuer_id"     => $issuerId,
-                            "birthday"      => null,
-                            "bank_account"  => null,
-                            "phone"         => $this->getProfile()->getShippingAddress()->getPhone(),
-                            "email"         => $this->getProfile()->getLogin() ,
-                            "gender"        => null,
-                            "referrer"      => $_SERVER['HTTP_REFERER'],
-                            "user_agent"    => $_SERVER['HTTP_USER_AGENT']
-                        ),
-                        "google_analytics"  =>  array(
-                            "account"   =>  $this->getSetting('ga_accountid')
-                        )
-                        //\XLite\Core\Config::getInstance()->Version->version,
-                    ));
 
+                $postData = array(
+                    "type"      =>  $trans_type,
+                    "order_id"  =>  $orderId,
+                    "currency"  =>  strtoupper($this->getOrder()->getCurrency()->getCode()),
+                    "amount"    =>  $this->getOrder()->getCurrency()->roundValue($this->transaction->getValue()) * 100,
+                    "gateway"   =>  $gateway,
+                    "description"=> $this->getInvoiceDescription(),
+                    "items"     =>  $items_list,
+                    "days_active"=> $this->getSetting('days_active'),
+                    "payment_options"=> array(
+                        "notification_url"  =>  $this->getReturnURL(null, true) . "&type=initial",
+                        "redirect_url"      =>  $this->getReturnURL(null, true) . '&redirect=true',
+                        "cancel_url"        =>  \XLite::getInstance()->getShopURL(\XLite\Core\Converter::buildURL('checkout'),
+                            \XLite\Core\Config::getInstance()->Security->customer_security
+                        ),
+                        "close_window"      =>  false
+                    ),
+                    "customer"  => array(
+                        "locale"        =>  $this->getLocaleFromLanguageCode(strtolower(\XLite\Core\Session::getInstance()->getLanguage()->getCode())),
+                        "ip_address"    =>  $this->getClientIP(),
+                        "forwarded_ip"  =>  $_SERVER['HTTP_X_FORWARDED_FOR'],
+                        "first_name"    =>  $this->getProfile()->getBillingAddress()->getFirstname(),
+                        "last_name"     =>  $this->getProfile()->getBillingAddress()->getLastname(),
+                        "address1"      =>  $billing_street,
+                        "house_number"  =>  $billing_housenumber,
+                        "zip_code"      =>  $this->getProfile()->getBillingAddress()->getZipcode(),
+                        "city"          =>  $this->getProfile()->getBillingAddress()->getCity(),
+                        "country"       =>  strtoupper($this->getProfile()->getBillingAddress()->getCountry()->getCode()),
+                        "phone"         =>  $this->getProfile()->getBillingAddress()->getPhone(),
+                        "email"         =>  $this->getProfile()->getLogin(),
+                        "disable_send_email"=> false,
+                        "user_agent"    =>  $_SERVER['HTTP_USER_AGENT'],
+                        "referrer"      =>  $_SERVER['HTTP_REFERER']
+                    ),
+                    "delivery"  =>  array(
+                        "first_name"    =>  $this->getProfile()->getShippingAddress()->getFirstname(),
+                        "last_name"     =>  $this->getProfile()->getShippingAddress()->getLastname(),
+                        "address1"      =>  $shipping_street,
+                        "house_number"  =>  $shipping_housenumber,
+                        "zip_code"      =>  $this->getProfile()->getShippingAddress()->getZipcode(),
+                        "city"          =>  $this->getProfile()->getShippingAddress()->getCity(),
+                        "country"       =>  strtoupper($this->getProfile()->getShippingAddress()->getCountry()->getCode()),
+                        "phone"         =>  $this->getProfile()->getShippingAddress()->getPhone(),
+                        "email"         =>  $this->getProfile()->getLogin()
+                    ),
+                    "shopping_cart" => $this->getShoppingCart(),
+                    "checkout_options" => $this->getCheckoutOptions(),
+                    "gateway_info"=>    array(
+                        "issuer_id"     => $issuerId,
+                        "phone"         => $this->getProfile()->getShippingAddress()->getPhone(),
+                        "email"         => $this->getProfile()->getLogin() ,
+                        "referrer"      => $_SERVER['HTTP_REFERER'],
+                        "user_agent"    => $_SERVER['HTTP_USER_AGENT']
+                    ),
+                    "google_analytics"  =>  array(
+                        "account"   =>  $this->getSetting('ga_accountid')
+                    )
+                );
+
+                $msp->orders->post($postData);
+                    
                     if($trans_type  ==  'direct' && in_array($gateway, $this->directGateways()))
                     {
                         $url    =   \XLite\Core\Request::getInstance()->returnURL . '&redirect=true&transactionid=' . \XLite\Core\Request::getInstance()->transid;
@@ -573,5 +565,173 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         }
 
         return $size - $pos - strlen($needle);
-    }    
+    }
+
+    /**
+     * @return array
+     */
+    public function getShoppingCart()
+    {
+        $shoppingcart_array = [];
+        $currency = $this->getOrder()->getCurrency();
+
+        //Add items
+
+        foreach ($this->getOrder()->getItems() as $products) {
+            $where_clause = 'p.product_id = ' . $products->getProduct()
+                    ->getProductId();
+            $result = \XLite\Core\Database::getRepo('\XLite\Model\Product')
+                ->createQueryBuilder('p')
+                ->andWhere($where_clause)->getQuery()->getResult();
+
+            $tax_table_selector = "BTW0";
+
+            if (!is_null($result)) {
+                foreach ($result as $r) {
+                    if (!is_null($r->getTaxClass())) {
+                        $tax_table_selector = $r->getTaxClass()->getTranslation(
+                        )->getName();
+                    }
+                }
+            }
+
+            $shoppingcart_array['items'][] = [
+                "name"               => $products->getName(),
+                "description"        => $products->getDescription(),
+                "unit_price"         => $currency->roundValue(
+                    $products->getItemNetPrice()
+                ),
+                "quantity"           => $products->getAmount(),
+                "merchant_item_id"   => $products->getSku(),
+                "tax_table_selector" => $tax_table_selector,
+                "weight"             => [
+                    "unit"  => strtoupper(
+                        \XLite\Core\Config::getInstance()->Units->weight_symbol
+                    ),
+                    "value" => $products->getWeight()
+                ]
+            ];
+        }
+
+        //Add coupons
+
+        if ($this->getOrder()->getUsedCoupons()->count() > 0) {
+            foreach ($this->getOrder()->getUsedCoupons() as $coupon) {
+                $shoppingcart_array['items'][] = [
+                    "name"               => "Discount/Coupon "
+                        . $coupon->getPublicName(),
+                    "description"        => 'DISCOUNT',
+                    "unit_price"         => -$currency->roundValue(
+                        $coupon->getValue()
+                    ),
+                    "quantity"           => 1,
+                    "merchant_item_id"   => $coupon->getId(),
+                    "tax_table_selector" => "BTW0",
+                    "weight"             => [
+                        "unit"  => strtoupper(
+                            \XLite\Core\Config::getInstance(
+                            )->Units->weight_symbol
+                        ),
+                        "value" => 0
+                    ]
+                ];
+            }
+        }
+
+        //Add shipping method
+
+        $shipping = $this->getOrder()->getSelectedShippingRate();
+
+        if (!is_null($shipping)) {
+            $where_clause = 's.method_id = ' . $shipping->getMethodId();
+            $result = \XLite\Core\Database::getRepo(
+                '\XLite\Model\Shipping\Method'
+            )
+                ->createQueryBuilder('s')
+                ->andWhere($where_clause)->getQuery()->getResult();
+
+            $tax_table_selector = "BTW0";
+
+            if (!is_null($result)) {
+                foreach ($result as $r) {
+                    if (!is_null($r->getTaxClass())) {
+                        $tax_table_selector = $r->getTaxClass()->getTranslation(
+                        )->getName();
+                    }
+                }
+            }
+
+            $shoppingcart_array['items'][] = [
+                "name"               => $shipping->getMethodName(),
+                "description"        => $shipping->getMethodName(),
+                "unit_price"         => $currency->roundValue(
+                    $shipping->getTotalRate()
+                ),
+                "quantity"           => 1,
+                "merchant_item_id"   => "msp-shipping",
+                "tax_table_selector" => $tax_table_selector,
+                "weight"             => [
+                    "unit"  => strtoupper(
+                        \XLite\Core\Config::getInstance()->Units->weight_symbol
+                    ),
+                    "value" => 0
+                ]
+            ];
+        }
+
+        return $shoppingcart_array;
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getCheckoutOptions()
+    {
+        $checkoutoptions_array = array();
+        $checkoutoptions_array['tax_tables']['default'] = array
+        (
+            "shipping_taxed" => false,
+            "rate" => null
+        );
+
+        $available_tax = \XLite\Core\Database::getRepo('XLite\Module\CDev\SalesTax\Model\Tax')->getTax();
+
+        $checkoutoptions_array['tax_tables']['alternate'][] = array(
+            "standalone" => false,
+            "name" => "BTW0",
+            "rules" => array
+            (
+                array
+                (
+                    "rate" => 0,
+                    "country" => null
+                )
+            )
+        );
+
+        foreach ($available_tax->getRates() as $tax) {
+            foreach ($tax->getZone()->getZoneCountries() as $c) {
+                if (!$this->in_array_recursive($c, $checkoutoptions_array['tax_tables']['alternate']['name']) &&
+                    !$this->in_array_recursive($c, $checkoutoptions_array['tax_tables']['alternate']['name'])) {
+                    $checkoutoptions_array['tax_tables']['alternate'][] = array
+                    (
+                        "standalone" => false,
+                        "name" => $tax->getTaxClass()->getTranslation()->getName(),
+                        "rules" => array
+                        (
+                            array
+                            (
+                                "rate" => $tax->getValue() / 100,
+                                "country" => $c->getCode()
+                            )
+                        )
+                    );
+                }
+            }
+        }
+
+        return $checkoutoptions_array;
+    }
+
 }
