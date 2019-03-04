@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay iDEAL QR
+    class: Module\MultiSafepay\IdealQr\Model\Payment\Processor\IdealQr
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay iDEAL QR
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }
