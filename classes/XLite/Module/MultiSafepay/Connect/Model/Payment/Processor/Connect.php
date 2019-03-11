@@ -248,7 +248,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
             $trans_type   =   "direct";
         }
         
-        if($gateway == 'BANKTRANS' && $this->getSetting('transaction_type') == '1')
+        if(in_array($gateway,["BANKTRANS", "TRUSTLY"]) && $this->getSetting('transaction_type') == '1')
         {
             $trans_type =   "direct";
         }
