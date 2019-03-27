@@ -328,6 +328,13 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                     ),
                     "google_analytics"  =>  array(
                         "account"   =>  $this->getSetting('ga_accountid')
+                    ),
+                    "plugin" => array(
+                        "shop" => "X-Cart",
+                        "plugin_version" => self::getPluginVersion(),
+                        "shop_version" => \XLite\Core\Config::getInstance()->Version->version,
+                        "partner" => null,
+                        "shop_root_url" => null
                     )
                 );
 
@@ -743,6 +750,12 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         }
         return false;
     }
+
+    public static function getPluginVersion()
+    {
+        return '2.1.0';
+    }
+
 
 
 }

@@ -23,6 +23,8 @@
 
 namespace XLite\Module\MultiSafepay\Payafter\Model\Payment\Processor;
 
+use XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect;
+
 class Payafter extends \XLite\Model\Payment\Base\WebBased
 {
 
@@ -271,7 +273,7 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased
                     ),
                     "plugin" => array(
                         "shop" => "X-Cart",
-                        "plugin_version" => "3.0.0",
+                        "plugin_version" => Connect::getPluginVersion(),
                         "shop_version" => \XLite\Core\Config::getInstance()->Version->version,
                         "partner" => null,
                         "shop_root_url" => null
