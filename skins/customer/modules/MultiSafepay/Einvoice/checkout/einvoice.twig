@@ -1,0 +1,8 @@
+<div class="form-item">
+    <img src="{{ asset('modules/MultiSafepay/assets/einvoice_logo_big.png') }}">
+    <br/><br/>
+    <li class="clearfix">
+        {{ widget('XLite\\Module\\MultiSafepay\\Einvoice\\View\\FormField\\Input\\Einvoice', fieldName='payment[bankaccount]', placeholder=t('Bankaccount'), fieldOnly='true', required='true') }}
+        {{ widget('XLite\\Module\\MultiSafepay\\Einvoice\\View\\FormField\\Input\\Einvoice', fieldName='payment[dob]', placeholder=t('dd-mm-yyyy'), fieldOnly='true', required='true') }}        
+    </li>
+</div>

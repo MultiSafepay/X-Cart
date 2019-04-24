@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Podium
+    class: Module\MultiSafepay\Podium\Model\Payment\Processor\Podium
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Podium
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

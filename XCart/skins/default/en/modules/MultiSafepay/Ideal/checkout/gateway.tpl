@@ -1,1 +1,0 @@
-<label><span class="payment-title"><img src="{preparePaymentMethodIcon(method.processor.getIconPath(order,method))}" alt="{method.getName()}" title="{method.getName()}"/> - {method.getName()}</span></label>

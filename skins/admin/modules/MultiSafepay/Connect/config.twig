@@ -1,0 +1,69 @@
+<table cellspacing="1" cellpadding="5" class="settings-table">
+
+  <tr>
+    <td class="setting-name">
+      <label for="settings_accounttype">{{ t('Account type') }}</label>
+    </td>
+    <td>
+      <select id="settings_account_type" name="settings[account_type]">
+        <option value="0" {% if this.isSelected(this.paymentMethod.getSetting('account_type'), '0') %} selected="selected" {% endif %}>{{ t('Test') }}</option>
+        <option value="1" {% if this.isSelected(this.paymentMethod.getSetting('account_type'), '1') %} selected="selected" {% endif %}>{{ t('Live') }}</option>	  
+      </select>
+    </td>
+  </tr>
+
+
+
+  <tr>
+    <td class="setting-name">
+      <label for="settings_api_key">{{ t('API Key') }}</label>
+    </td>
+    <td>
+      <input type="text" id="settings_api_key" name="settings[api_key]" value="{{ this.paymentMethod.getSetting('api_key') }}" class="validate[required,maxSize[255]]" />
+    </td>
+  </tr>
+
+  <tr>
+    <td class="setting-name">
+      <label for="settings_transaction_type">{{ t('Enable direct transaction') }}</label>
+    </td>
+    <td>
+      <select id="settings_transaction_type" name='settings[transaction_type]'>
+        <option value="0" {% if this.isSelected(this.paymentMethod.getSetting('transaction_type'), '0') %} selected="selected" {% endif %}>{{ t('Disable') }}</option>
+        <option value="1" {% if this.isSelected(this.paymentMethod.getSetting('transaction_type'), '1') %} selected="selected" {% endif %}>{{ t('Enable') }}</option>
+      </select>
+    </td>
+  </tr>	
+
+
+  <tr>
+    <td class="setting-name">
+      <label for="settings_daysactive">{{ t('Days Active') }}</label>
+    </td>
+    <td>
+      <input type="text" id="settings_days_active" name="settings[days_active]" value="{{ this.paymentMethod.getSetting('days_active') }}" class="validate[required,maxSize[255]]" />
+    </td>
+  </tr>	
+
+
+
+  <tr>
+    <td class="setting-name">
+      <label for="settings_ga_accountid">{{ t('Google Analytics ID') }}</label>
+    </td>
+    <td>
+      <input type="text" id="settings_ga_accountid" name="settings[ga_accountid]" value="{{ this.paymentMethod.getSetting('ga_accountid') }}" class="validate[required,maxSize[255]]" />
+    </td>
+  </tr>	
+
+
+  <tr>
+    <td class="setting-name">
+      <label for="settings_prefix">{{ t('Invoice number prefix') }}</label>
+    </td>
+    <td>
+      <input type="text" id="settings_prefix" value="{{ this.paymentMethod.getSetting('prefix') }}" name="settings[prefix]" />
+    </td>
+  </tr>
+
+</table>

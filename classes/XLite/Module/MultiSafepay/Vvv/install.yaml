@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay VVV Giftcard
+    class: Module\MultiSafepay\Vvv\Model\Payment\Processor\Vvv
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay VVV Giftcard
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

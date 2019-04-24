@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay De Grote Speelgoedwinkel
+    class: Module\MultiSafepay\Dgsw\Model\Payment\Processor\Dgsw
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay De Grote Speelgoedwinkel
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

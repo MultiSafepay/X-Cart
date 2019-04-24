@@ -1,0 +1,14 @@
+XLite\Model\Payment\Method:
+  - service_name: MultiSafepay Pay After Delivery
+    class: Module\MultiSafepay\Payafter\Model\Payment\Processor\Payafter
+    type: C
+    orderby: -10100
+    translations:
+      - code: en
+        name: MultiSafepay Pay After Delivery
+    settings:
+      - name: prefix
+        value: xcart_
+
+XLite\Model\LanguageLabel:
+  - { name: "prefix", translations: [{code: en, label: "Invoice number prefix" }] }

@@ -1,0 +1,7 @@
+<div class="form-item">
+  <img src="{{ asset('modules/MultiSafepay/assets/ideal_logo_big.png') }}">
+  <br/><br/>    
+  <li class="clearfix">
+    {{ widget('XLite\\Module\\MultiSafepay\\Ideal\\View\\FormField\\Select\\Issuer', fieldName='payment[iid]', placeholder=t('Subject'), fieldOnly='true', required='true') }}
+  </li>
+</div>
