@@ -1,5 +1,5 @@
 ## 2.2.0
-Release date: Mar 27th, 2019
+Release date: Apr 24th, 2019
 
 ### Added
 + PLGXCTS-40: Added Trustly direct and redirect payment method.
