@@ -1,49 +1,67 @@
-# X-cart
-MultiSafepay plug-in for X-cart  5.3
+# X-Cart
+MultiSafepay plugin for X-Cart 5.3
 
-The MultiSafepay plug-in for X-cart allows you to integrate add all paymentmethods and giftcards offered by MultiSafepay into your X-cart webshop.
+This plugin allows you to integrate all payment methods and giftcards offered by MultiSafepay into your X-Cart webshop.
 
-The MultiSafepay plug-in for X-cart has support for:
+This plugin has support for:
 
-Paymentmethods:
-1. iDEAL
-2. Klarna Invoice
-3. Dotpay
-4. EPS
-10. PayPal
-11. Pay After Delivery
-12. Direct Debit
-13. American Express
-14. Bancontact
-15. Maestro
-16. Sofort
-17. Banktransfer
-18. Giropay
+Payment methods:
+
+1. AfterPay
+2. Alipay
+3. American Express
+4. Bancontact
+5. Bank transfer
+6. Belfius
+7. Direct Debit
+8. Dotpay
+9. E-Invoicing
+10. EPS
+11. Ferbuy
+12. Giropay
+13. iDEAL
+14. iDEAL-QR
+15. ING Home'Pay
+16. KBC
+17. Klarna
+18. Maestro
 19. Mastercard
-20. Visa
+20. Pay After Delivery
+21. PayPal
+22. Paysafecard
+23. Santander Betaalplan
+24. Sofort
+25. Trustly
+26. TrustPay
+27. Visa
 
 The following giftcards are supported:
-1. Wijncadeau
-2. Babygiftcard
-3. Wellnessgiftcard
-4. Fietsenbon
-5. Beauty and Wellness
-6. Webshopgiftcard
-7. Parfumcadeaukaart
-8. Fashioncheque
-9. Erotiekbon
-10. Boekenbon
-11. Gezondheidsbon
-12. Fashiongiftcard
-13. Nationale verwencadeaubon
-14. Nationale tuinbon
-15. Goodcard
-16. Givacard
-17. Yourgift
-18. Sport en Fit
-19. VVV Bon
-20. Podium
-21. Winkel Cheque
 
+1. Beauty & Wellness
+2. Bloemencadeau
+3. Boekenbon
+4. Brouwmarkt
+5. De grote speelgoedwinkel cadeaukaart
+6. Fashioncheque
+7. Fashiongiftcard
+8. Fietsenbon
+9. Gezondheidsbon
+10. GivaCard
+11. Good Card
+12. Jewel Store Giftcard
+13. Kelly Giftcard
+14. Lief kadokaart
+15. Nationale Erotiekbon
+16. Nationale Tuinbon
+17. Parfumcadeaukaart
+18. Parfum NL
+19. Podium
+20. Sport & Fit
+21. VVV Cadeaukaart
+22. Webshop Giftcard
+23. Wellness Giftcard
+24. Wijncadeau
+25. Winkelcheque
+26. YourGift
 
-
+For support you can contact MultiSafepay by email using <techsupport@multisafepay.com>
