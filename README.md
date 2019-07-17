@@ -1,67 +1,26 @@
-# X-Cart
-MultiSafepay plugin for X-Cart 5.3
+<p align="center">
+  <img src="https://www.multisafepay.com/img/multisafepaylogo.svg" width="400px" position="center">
+</p>
 
-This plugin allows you to integrate all payment methods and giftcards offered by MultiSafepay into your X-Cart webshop.
+# MultiSafepay plugin for X-Cart
 
-This plugin has support for:
+Easily integrate MultiSafepay payment solutions into your X-Cart webshop with the free MultiSafepay X-Cart plugin.
 
-Payment methods:
+## About MultiSafepay
+MultiSafepay is a collecting payment service provider which means we take care of the agreements, technical details and payment collection required for each payment method. You can start selling online today and manage all your transactions from one place.
+## Supported Payment Methods
+The supported Payment Methods & Gift cards for this plugin can be found over here: [Payment Methods & Gift cards](https://docs.multisafepay.com/plugins/x-cart/faq/#available-payment-methods-in-x-cart)
 
-1. AfterPay
-2. Alipay
-3. American Express
-4. Bancontact
-5. Bank transfer
-6. Belfius
-7. Direct Debit
-8. Dotpay
-9. E-Invoicing
-10. EPS
-11. Ferbuy
-12. Giropay
-13. iDEAL
-14. iDEAL-QR
-15. ING Home'Pay
-16. KBC
-17. Klarna
-18. Maestro
-19. Mastercard
-20. Pay After Delivery
-21. PayPal
-22. Paysafecard
-23. Santander Betaalplan
-24. Sofort
-25. Trustly
-26. TrustPay
-27. Visa
+## Requirements
+- To use the plugin you need a MultiSafepay account. You can create a test account on https://testmerchant.multisafepay.com/signup
+- X-Cart 5.x
 
-The following giftcards are supported:
+## Installation
 
-1. Beauty & Wellness
-2. Bloemencadeau
-3. Boekenbon
-4. Brouwmarkt
-5. De grote speelgoedwinkel cadeaukaart
-6. Fashioncheque
-7. Fashiongiftcard
-8. Fietsenbon
-9. Gezondheidsbon
-10. GivaCard
-11. Good Card
-12. Jewel Store Giftcard
-13. Kelly Giftcard
-14. Lief kadokaart
-15. Nationale Erotiekbon
-16. Nationale Tuinbon
-17. Parfumcadeaukaart
-18. Parfum NL
-19. Podium
-20. Sport & Fit
-21. VVV Cadeaukaart
-22. Webshop Giftcard
-23. Wellness Giftcard
-24. Wijncadeau
-25. Winkelcheque
-26. YourGift
+1. Unzip the content of the .ZIP file in the root of your webshop
+2. Login in your backend and navigate to System tools -> Cache management -> Re-deploy the store and press Start.
 
-For support you can contact MultiSafepay by email using <techsupport@multisafepay.com>
+For additional information or instructions please see our [installation & configuration manual](https://docs.multisafepay.com/plugins/x-cart/manual/)
+ 
+## Support
+You can create issues on our repository. If you need any additional help or support, please contact <a href="mailto:techsupport@multisafepay.com">techsupport@multisafepay.com</a>
