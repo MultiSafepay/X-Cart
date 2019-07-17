@@ -6,6 +6,8 @@
 
 Easily integrate MultiSafepay payment solutions into your X-Cart webshop with the free MultiSafepay X-Cart plugin.
 
+[![Latest Stable Version](https://img.shields.io/github/release/multisafepay/x-cart.svg)](https://github.com/MultiSafepay/x-cart/)
+
 ## About MultiSafepay
 MultiSafepay is a collecting payment service provider which means we take care of the agreements, technical details and payment collection required for each payment method. You can start selling online today and manage all your transactions from one place.
 ## Supported Payment Methods
