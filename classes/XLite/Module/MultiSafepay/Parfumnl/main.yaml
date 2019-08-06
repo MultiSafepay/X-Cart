@@ -1,0 +1,11 @@
+version: 5.4.0.0
+type: payment
+authorName: MultiSafepay
+moduleName: 'MultiSafepay ParfumNL'
+description: 'Enables the MultiSafepay ParfumNL module'
+minorRequiredCoreVersion: 0
+dependsOn: {  }
+incompatibleWith: {  }
+skins: {  }
+showSettingsForm: false
+canDisable: true

@@ -194,7 +194,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @return string
      */
     protected function getEnvironment()
@@ -271,7 +271,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getInputTemplate()
@@ -282,7 +282,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param \XLite\Model\Payment\Method $method
      * @return string
      */
@@ -338,7 +338,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param type $order
      * @param type $method
      * @return type

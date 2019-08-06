@@ -1,0 +1,11 @@
+version: 5.4.0.0
+type: payment
+authorName: MultiSafepay
+moduleName: 'MultiSafepay Betaalplan'
+description: 'Enables the MultiSafepay Betaalplan module'
+minorRequiredCoreVersion: 0
+dependsOn: {  }
+incompatibleWith: {  }
+skins: {  }
+showSettingsForm: false
+canDisable: true

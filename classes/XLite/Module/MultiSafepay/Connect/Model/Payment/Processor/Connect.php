@@ -24,7 +24,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
     /**
      * Get allowed backend transactions
      *
-     * @return string Status code 
+     * @return string Status code
      */
     public function getAllowedTransactions()
     {
@@ -52,12 +52,12 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
      */
     public function processReturn(\XLite\Model\Payment\Transaction $transaction)
     {
-        require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'API' . LC_DS . 'Autoloader.php';        
+        require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'API' . LC_DS . 'Autoloader.php';
         parent::processReturn($transaction);
-        
+
         try{
             if (\XLite\Core\Request::getInstance()->transactionid) {
-                
+
                 $settings = $this->getPaymentSettings($this->settings);
                 if($this->getSetting('transaction_type') == '1')
                 {
@@ -65,11 +65,11 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                 } else {
                     $order_id   =   \XLite\Core\Request::getInstance()->transactionid;
                 }
-                
+
                 $msp = new \MultiSafepayAPI\Client();
                 $msp->setApiKey($this->getSetting('api_key'));
                 $msp->setApiUrl($this->getEnvironment());
-                
+
                 $response = $msp->orders->get('orders', $order_id);
 
                 switch ($response->status)
@@ -108,7 +108,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                     case "shipped":
                         break;
                 }
-                
+
                 $this->transaction->setStatus($order_status);
                 $this->transaction->update();
 
@@ -126,7 +126,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                     }
                 } else {
                     echo 'OK';
-                    exit;                    
+                    exit;
                 }
             }
         } catch (Exception $e) {
@@ -222,13 +222,13 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
 
     /**
      * Start payment transaction
-     * 
+     *
      * @param type $issuerId
      * @param type $transid
      * @param type $settings
      * @param string $gateway
      */
-    
+
     public function startTransaction($issuerId = '', $transid, $settings = '', $gateway = '')
     {
         require_once LC_DIR_MODULES . 'MultiSafepay' . LC_DS . 'API' . LC_DS . 'Autoloader.php';
@@ -239,7 +239,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
 
         if ($settings != '') {
             $this->settings = $settings;
-        }        
+        }
 
         $trans_type =   "redirect";
 
@@ -247,7 +247,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         {
             $trans_type   =   "direct";
         }
-        
+
         if(in_array($gateway,["BANKTRANS", "TRUSTLY"]) && $this->getSetting('transaction_type') == '1')
         {
             $trans_type =   "direct";
@@ -256,7 +256,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         if ($this->transaction) {
             $orderId    =   $this->transaction->getPublicTxnId();
             $settings   =   $this->getPaymentSettings($this->settings);
-            
+
             $items_list =   '<ul>';
             foreach ($this->getOrder()->getItems() as $item)
             {
@@ -264,11 +264,11 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                 $items_list.= '<li>' . $item->getAmount() . ' x ' . $product->getName() . '</li>';
             }
             $items_list .= '</ul>';
-            
+
             try {
                 $msp = new \MultiSafepayAPI\Client();
                 $msp->setApiKey($this->getSetting('api_key'));
-                $msp->setApiUrl($this->getEnvironment());                
+                $msp->setApiUrl($this->getEnvironment());
                 list($billing_street, $billing_housenumber) = $this->parseAddress($this->getProfile()->getBillingAddress()->getStreet());
                 list($shipping_street, $shipping_housenumber) = $this->parseAddress($this->getProfile()->getShippingAddress()->getStreet());
 
@@ -339,34 +339,34 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
                 );
 
                 $msp->orders->post($postData);
-                    
-                    if($trans_type  ==  'direct' && in_array($gateway, $this->directGateways()))
-                    {
-                        $url    =   \XLite\Core\Request::getInstance()->returnURL . '&redirect=true&transactionid=' . \XLite\Core\Request::getInstance()->transid;
-                    } else {
-                        $url    =   $msp->orders->getPaymentLink();
-                    }
-                    
-                    header('Location: ' . $url);
-                    exit;
+
+                if($trans_type  ==  'direct' && in_array($gateway, $this->directGateways()))
+                {
+                    $url    =   \XLite\Core\Request::getInstance()->returnURL . '&redirect=true&transactionid=' . \XLite\Core\Request::getInstance()->transid;
+                } else {
+                    $url    =   $msp->orders->getPaymentLink();
+                }
+
+                header('Location: ' . $url);
+                exit;
             } catch (\Exception $e) {
-				\XLite\Core\TopMessage::addError("Error " .$e->getMessage());
-				return  false;
+                \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
+                return  false;
             }
         }
     }
-    
+
     /**
      * Convert language_code to locale
-     * 
+     *
      * @param type $language_code
      * @return type
      */
-    
+
     public function getLocaleFromLanguageCode($language_code)
     {
         $locale_array = array
-            (
+        (
             'nl' => 'nl_NL',
             'en' => 'en_GB',
             'fr' => 'fr_FR',
@@ -393,14 +393,14 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         } else {
             return null;
         }
-    }    
+    }
 
     /**
      * Return the API Url based on the account type specified
-     * 
+     *
      * @return string
      */
-    
+
     protected function getEnvironment()
     {
         if ($this->getSetting('account_type') == '1') {
@@ -412,25 +412,25 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
 
     /**
      * Array of type direct supported gateways
-     * 
+     *
      * @return type array
      */
-    
+
     protected function directGateways()
     {
         return array(
-            "BANKTRANS", 
+            "BANKTRANS",
             "DIRDEB",
             "PAYPAL"
         );
     }
-    
+
     /**
      * Get array of payment settings
      *
      * @return array
      */
-    
+
     public function getPaymentSettings($settings)
     {
         $result = array();
@@ -452,7 +452,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
      *
      * @result string
      */
-    
+
     protected function getSetting($name)
     {
         $settings   =   $this->settings;
@@ -471,7 +471,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
      *
      * @return string
      */
-    
+
     protected function getFormURL()
     {
         return \XLite\Core\Converter::buildURL('connect', 'transaction');
@@ -482,7 +482,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
      *
      * @return array
      */
-    
+
     protected function getFormFields()
     {
         return array(
@@ -490,13 +490,13 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
             'returnURL' => $this->getReturnURL(null, true),
         );
     }
-    
+
     /**
      * Get input template
      *
      * @return string
      */
-    
+
     public function getCheckoutTemplate(\XLite\Model\Payment\Method $method)
     {
         return 'modules/MultiSafepay/Connect/checkout/gateway.twig';
@@ -504,12 +504,12 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
 
     /**
      * Get payment method icon path
-     * 
+     *
      * @param type $order
      * @param type $method
      * @return type string
      */
-    
+
     public function getIconPath(\XLite\Model\Order $order = null, \XLite\Model\Payment\Method $method = null)
     {
         return 'modules/MultiSafepay/' . $this->gateway . '/checkout/' . $this->icon;
@@ -517,11 +517,11 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
 
     /**
      * Split the housenumber, suffix and street by provided address line
-     * 
+     *
      * @param type $street_address
      * @return type
      */
-    
+
     public function parseAddress($street_address)
     {
         $address = $street_address;
@@ -550,13 +550,13 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
     }
 
     /**
-     * 
+     *
      * @param type $haystack
      * @param type $needle
      * @param type $offset
      * @return boolean
      */
-    
+
     public function rstrpos($haystack, $needle, $offset = null)
     {
         $size = strlen($haystack);

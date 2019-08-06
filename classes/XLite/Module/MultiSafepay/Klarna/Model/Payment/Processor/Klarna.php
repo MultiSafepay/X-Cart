@@ -163,7 +163,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param type $transid
      * @param type $settings
      * @param type $gateway
@@ -284,22 +284,22 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                 exit;
             } catch (Exception $e) {
                 \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
-				return  false;
+                return  false;
             }
         }
     }
-    
+
     /**
      * Convert language_code to locale
-     * 
+     *
      * @param type $language_code
      * @return type
      */
-    
+
     public function getLocaleFromLanguageCode($language_code)
     {
         $locale_array = array
-            (
+        (
             'nl' => 'nl_NL',
             'en' => 'en_GB',
             'fr' => 'fr_FR',
@@ -326,10 +326,10 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
         } else {
             return null;
         }
-    } 
+    }
 
     /**
-     * 
+     *
      * @return type
      */
     public function getShoppingCart()
@@ -342,15 +342,15 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
         foreach ($this->getOrder()->getItems() as $products) {
             $where_clause = 'p.product_id = ' . $products->getProduct()->getProductId();
             $result = \XLite\Core\Database::getRepo('\XLite\Model\Product')
-                            ->createQueryBuilder('p')
-                            ->andWhere($where_clause)->getQuery()->getResult();
+                ->createQueryBuilder('p')
+                ->andWhere($where_clause)->getQuery()->getResult();
             if (!is_null($result)) {
                 foreach ($result as $r) {
                     if(!is_null($r->getTaxClass()))
                     {
                         $tax_table_selector =   $r->getTaxClass()->getTranslation()->getName();
                     }else{
-                        $tax_table_selector =   "BTW0";                        
+                        $tax_table_selector =   "BTW0";
                     }
                 }
             } else {
@@ -358,7 +358,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
             }
 
             $shoppingcart_array['items'][] = array
-                (
+            (
                 "name" => $products->getName(),
                 "description" => $products->getDescription(),
                 "unit_price" => $currency->roundValue($products->getItemNetPrice()),
@@ -366,7 +366,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                 "merchant_item_id" => $products->getSku(),
                 "tax_table_selector" => $tax_table_selector,
                 "weight" => array
-                    (
+                (
                     "unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
                     "value" => $products->getWeight()
                 )
@@ -378,7 +378,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
         if ($this->getOrder()->getUsedCoupons()->count() > 0) {
             foreach ($this->getOrder()->getUsedCoupons() as $coupon) {
                 $shoppingcart_array['items'][] = array
-                    (
+                (
                     "name" => "Discount/Coupon " . $coupon->getPublicName(),
                     "description" => 'DISCOUNT',
                     "unit_price" => -$currency->roundValue($coupon->getValue()),
@@ -386,7 +386,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                     "merchant_item_id" => $coupon->getId(),
                     "tax_table_selector" => "BTW0",
                     "weight" => array
-                        (
+                    (
                         "unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
                         "value" => 0
                     )
@@ -400,24 +400,24 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
 
         $where_clause = 's.method_id = ' . $shipping->getMethodId();
         $result = \XLite\Core\Database::getRepo('\XLite\Model\Shipping\Method') // \Rate ?
-                        ->createQueryBuilder('s')
-                        ->andWhere($where_clause)->getQuery()->getResult();
+        ->createQueryBuilder('s')
+            ->andWhere($where_clause)->getQuery()->getResult();
 
         if (!is_null($result)) {
             foreach ($result as $r) {
-				if(!is_null($r->getTaxClass()))
-				{
-					$tax_table_selector = $r->getTaxClass()->getTranslation()->getName();
-				} else {
-					$tax_table_selector = "BTW0";
-				}
+                if(!is_null($r->getTaxClass()))
+                {
+                    $tax_table_selector = $r->getTaxClass()->getTranslation()->getName();
+                } else {
+                    $tax_table_selector = "BTW0";
+                }
             }
         } else {
             $tax_table_selector = "BTW0";
         }
 
         $shoppingcart_array['items'][] = array
-            (
+        (
             "name" => $shipping->getMethodName(),
             "description" => $shipping->getMethodName(),
             "unit_price" => $currency->roundValue($shipping->getTotalRate()),
@@ -425,7 +425,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
             "merchant_item_id" => "msp-shipping",
             "tax_table_selector" => $tax_table_selector,
             "weight" => array
-                (
+            (
                 "unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
                 "value" => 0
             )
@@ -436,14 +436,14 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @return array
      */
     public function getCheckoutOptions()
     {
         $checkoutoptions_array = array();
         $checkoutoptions_array['tax_tables']['default'] = array
-            (
+        (
             "shipping_taxed" => false,
             "rate" => null
         );
@@ -454,9 +454,9 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
             "standalone" => false,
             "name" => "BTW0",
             "rules" => array
-                (
+            (
                 array
-                    (
+                (
                     "rate" => 0,
                     "country" => null
                 )
@@ -466,15 +466,15 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
         foreach ($available_tax->getRates() as $tax) {
             foreach ($tax->getZone()->getZoneCountries() as $c) {
                 if (!$this->in_array_recursive($c, $checkoutoptions_array['tax_tables']['alternate']['name']) &&
-                        !$this->in_array_recursive($c, $checkoutoptions_array['tax_tables']['alternate']['name'])) {
+                    !$this->in_array_recursive($c, $checkoutoptions_array['tax_tables']['alternate']['name'])) {
                     $checkoutoptions_array['tax_tables']['alternate'][] = array
-                        (
+                    (
                         "standalone" => false,
                         "name" => $tax->getTaxClass()->getTranslation()->getName(),
                         "rules" => array
-                            (
+                        (
                             array
-                                (
+                            (
                                 "rate" => $tax->getValue() / 100,
                                 "country" => $c->getCode()
                             )
@@ -488,7 +488,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @return string
      */
     protected function getEnvironment()
@@ -564,7 +564,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getInputTemplate()
@@ -610,7 +610,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param \XLite\Model\Order $order
      * @param \XLite\Model\Payment\Method $method
      * @return type
@@ -624,7 +624,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param \XLite\Model\Payment\Method $method
      * @return string
      */
@@ -634,7 +634,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param type $street_address
      * @return type
      */
@@ -666,7 +666,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param type $haystack
      * @param type $needle
      * @param type $offset
@@ -690,7 +690,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param type $needle
      * @param type $haystack
      * @param type $strict
@@ -707,7 +707,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param type $dob
      * @return type
      */
@@ -723,7 +723,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
             }
         } catch (Exception $e) {
             \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
-			return  false;
+            return  false;
         }
     }
 
