@@ -444,14 +444,32 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased
      */
     public function getCheckoutOptions()
     {
+        $available_tax = null;
+
+        $tax_repos = [
+            'XLite\Module\CDev\SalesTax\Model\Tax',
+            'XLite\Module\CDev\VAT\Model\Tax',
+        ];
+
+        foreach($tax_repos as $repo)
+        {
+            $repo = \XLite\Core\Database::getRepo($repo);
+            if ($repo !== null) {
+                $available_tax = $repo->getTax();
+            }
+        }
+
+        if($available_tax === null)
+        {
+            return;
+        }
+
         $checkoutoptions_array = array();
         $checkoutoptions_array['tax_tables']['default'] = array
         (
             "shipping_taxed" => false,
             "rate" => null
         );
-
-        $available_tax = \XLite\Core\Database::getRepo('XLite\Module\CDev\SalesTax\Model\Tax')->getTax();
 
         $checkoutoptions_array['tax_tables']['alternate'][] = array(
             "standalone" => false,
