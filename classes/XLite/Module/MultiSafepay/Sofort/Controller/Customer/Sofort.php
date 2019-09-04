@@ -30,7 +30,7 @@ class Sofort extends \XLite\Controller\Customer\ACustomer
     {
         try {
             $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-            $processor->doTransactionRequest('', \XLite\Core\Request::getInstance()->transid, 'MultiSafepay Connect', 'DIRECTBANK');
+            $processor->startTransaction('', \XLite\Core\Request::getInstance()->transid, 'MultiSafepay Connect', 'DIRECTBANK');
         } catch (\Exception $e) {
             \XLite\Core\TopMessage::addError(static::t('MultiSafepay - ' . htmlspecialchars($e->getMessage())));
         }
