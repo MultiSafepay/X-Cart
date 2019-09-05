@@ -1,8 +1,8 @@
 version: 5.4.0.0
 type: payment
 authorName: MultiSafepay
-moduleName: 'MultiSafepay Ing Home\"Pay'
-description: 'Enables the MultiSafepay Ing Home\"Pay module'
+moduleName: "MultiSafepay Ing Home'Pay"
+description: "Enables the MultiSafepay Ing Home'Pay module"
 minorRequiredCoreVersion: 0
 dependsOn: {  }
 incompatibleWith: {  }
