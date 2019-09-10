@@ -73,7 +73,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getDescription()
     {
-        return 'Enables MultiSafepay ING Home\'Pay transactions';
+        return "Enables MultiSafepay ING Home'Pay transactions";
     }
 
     /**
