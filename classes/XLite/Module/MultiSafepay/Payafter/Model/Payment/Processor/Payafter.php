@@ -23,7 +23,9 @@
 
 namespace XLite\Module\MultiSafepay\Payafter\Model\Payment\Processor;
 
+use XLite\Module\MultiSafepay\Connect\Model\Cart;
 use XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect;
+use XLite\Module\MultiSafepay\Connect\Model\Tax;
 
 class Payafter extends \XLite\Model\Payment\Base\WebBased
 {
@@ -257,8 +259,8 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased
                         "phone" => $this->getProfile()->getShippingAddress()->getPhone(),
                         "email" => $this->getProfile()->getLogin()
                     ),
-                    "shopping_cart" => $this->getShoppingCart(),
-                    "checkout_options" => $this->getCheckoutOptions(),
+                    "shopping_cart" => Cart::getShoppingCart($this->getorder()),
+                    "checkout_options" => Tax::getCheckoutOptions(),
                     "gateway_info" => array(
                         "birthday" => $birthday_input,
                         "bank_account" => $bankaccount_input,
@@ -327,185 +329,6 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased
         } else {
             return null;
         }
-    }
-
-    /**
-     *
-     * @return type
-     */
-    public function getShoppingCart()
-    {
-        $shoppingcart_array = array();
-        $currency = $this->getOrder()->getCurrency();
-
-        //Add items
-
-        foreach ($this->getOrder()->getItems() as $products) {
-            $where_clause = 'p.product_id = ' . $products->getProduct()->getProductId();
-            $result = \XLite\Core\Database::getRepo('\XLite\Model\Product')
-                ->createQueryBuilder('p')
-                ->andWhere($where_clause)->getQuery()->getResult();
-            if (!is_null($result)) {
-                foreach ($result as $r) {
-                    if(!is_null($r->getTaxClass()))
-                    {
-                        $tax_table_selector =   $r->getTaxClass()->getTranslation()->getName();
-                    }else{
-                        $tax_table_selector =   "BTW0";
-                    }
-                }
-            } else {
-                $tax_table_selector = "BTW0";
-            }
-
-            $shoppingcart_array['items'][] = array
-            (
-                "name" => $products->getName(),
-                "description" => $products->getDescription(),
-                "unit_price" => $currency->roundValue($products->getItemNetPrice()),
-                "quantity" => $products->getAmount(),
-                "merchant_item_id" => $products->getSku(),
-                "tax_table_selector" => $tax_table_selector,
-                "weight" => array
-                (
-                    "unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
-                    "value" => $products->getWeight()
-                )
-            );
-        }
-
-        //Add coupons
-
-        if ($this->getOrder()->getUsedCoupons()->count() > 0) {
-            foreach ($this->getOrder()->getUsedCoupons() as $coupon) {
-                $shoppingcart_array['items'][] = array
-                (
-                    "name" => "Discount/Coupon " . $coupon->getPublicName(),
-                    "description" => 'DISCOUNT',
-                    "unit_price" => -$currency->roundValue($coupon->getValue()),
-                    "quantity" => 1,
-                    "merchant_item_id" => $coupon->getId(),
-                    "tax_table_selector" => "BTW0",
-                    "weight" => array
-                    (
-                        "unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
-                        "value" => 0
-                    )
-                );
-            }
-        }
-
-        //Add shipping method
-
-        $shipping = $this->getOrder()->getSelectedShippingRate();
-
-        if(!is_null($shipping))
-        {
-            $where_clause = 's.method_id = ' . $shipping->getMethodId();
-            $result = \XLite\Core\Database::getRepo('\XLite\Model\Shipping\Method')
-                ->createQueryBuilder('s')
-                ->andWhere($where_clause)->getQuery()->getResult();
-
-            if (!is_null($result)) {
-                foreach ($result as $r) {
-                    if(!is_null($r->getTaxClass()))
-                    {
-                        $tax_table_selector = $r->getTaxClass()->getTranslation()->getName();
-                    } else {
-                        $tax_table_selector = "BTW0";
-                    }
-                }
-            } else {
-                $tax_table_selector = "BTW0";
-            }
-
-            $shoppingcart_array['items'][] = array
-            (
-                "name" => $shipping->getMethodName(),
-                "description" => $shipping->getMethodName(),
-                "unit_price" => $currency->roundValue($shipping->getTotalRate()),
-                "quantity" => 1,
-                "merchant_item_id" => "msp-shipping",
-                "tax_table_selector" => $tax_table_selector,
-                "weight" => array
-                (
-                    "unit" => strtoupper(\XLite\Core\Config::getInstance()->Units->weight_symbol),
-                    "value" => 0
-                )
-            );
-        }
-
-        return $shoppingcart_array;
-    }
-
-    /**
-     *
-     * @return array
-     */
-    public function getCheckoutOptions()
-    {
-        $available_tax = null;
-
-        $tax_repos = [
-            'XLite\Module\CDev\SalesTax\Model\Tax',
-            'XLite\Module\CDev\VAT\Model\Tax',
-        ];
-
-        foreach($tax_repos as $repo)
-        {
-            $repo = \XLite\Core\Database::getRepo($repo);
-            if ($repo !== null) {
-                $available_tax = $repo->getTax();
-            }
-        }
-
-        if($available_tax === null)
-        {
-            return;
-        }
-
-        $checkoutoptions_array = array();
-        $checkoutoptions_array['tax_tables']['default'] = array
-        (
-            "shipping_taxed" => false,
-            "rate" => null
-        );
-
-        $checkoutoptions_array['tax_tables']['alternate'][] = array(
-            "standalone" => false,
-            "name" => "BTW0",
-            "rules" => array
-            (
-                array
-                (
-                    "rate" => 0,
-                    "country" => null
-                )
-            )
-        );
-
-        foreach ($available_tax->getRates() as $tax) {
-            foreach ($tax->getZone()->getZoneCountries() as $c) {
-                if (!$this->in_array_recursive($c, $checkoutoptions_array['tax_tables']['alternate']['name']) &&
-                    !$this->in_array_recursive($c, $checkoutoptions_array['tax_tables']['alternate']['name'])) {
-                    $checkoutoptions_array['tax_tables']['alternate'][] = array
-                    (
-                        "standalone" => false,
-                        "name" => $tax->getTaxClass()->getTranslation()->getName(),
-                        "rules" => array
-                        (
-                            array
-                            (
-                                "rate" => $tax->getValue() / 100,
-                                "country" => $c->getCode()
-                            )
-                        )
-                    );
-                }
-            }
-        }
-
-        return $checkoutoptions_array;
     }
 
     /**
@@ -708,23 +531,6 @@ class Payafter extends \XLite\Model\Payment\Base\WebBased
         }
 
         return $size - $pos - strlen($needle);
-    }
-
-    /**
-     *
-     * @param type $needle
-     * @param type $haystack
-     * @param type $strict
-     * @return boolean
-     */
-    function in_array_recursive($needle, $haystack, $strict = false)
-    {
-        foreach ($haystack as $item) {
-            if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && $this->in_array_recursive($needle, $item, $strict))) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
