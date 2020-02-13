@@ -25,6 +25,7 @@ namespace XLite\Module\MultiSafepay\Klarna\Model\Payment\Processor;
 
 use XLite\Module\MultiSafepay\Connect\Model\Cart;
 use XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect;
+use XLite\Module\MultiSafepay\Connect\Model\Payment\Refund;
 use XLite\Module\MultiSafepay\Connect\Model\Tax;
 
 class Klarna extends \XLite\Model\Payment\Base\WebBased
@@ -185,7 +186,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
             $items_list = '<ul>';
             foreach ($this->getOrder()->getItems() as $item) {
                 $product = $item->getProduct();
-                $items_list.= '<li>' . $item->getAmount() . ' x ' . $product->getName() . '</li>';
+                $items_list .= '<li>' . $item->getAmount() . ' x ' . $product->getName() . '</li>';
             }
             $items_list .= '</ul>';
 
@@ -228,7 +229,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                         "close_window" => false
                     ),
                     "customer" => array(
-                        "locale"        =>  $this->getLocaleFromLanguageCode(strtolower(\XLite\Core\Session::getInstance()->getLanguage()->getCode())),
+                        "locale" => $this->getLocaleFromLanguageCode(strtolower(\XLite\Core\Session::getInstance()->getLanguage()->getCode())),
                         "ip_address" => $this->getClientIP(),
                         "forwarded_ip" => $_SERVER['HTTP_X_FORWARDED_FOR'],
                         "first_name" => $this->getProfile()->getBillingAddress()->getFirstname(),
@@ -285,8 +286,8 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                 header('Location: ' . $msp->orders->getPaymentLink());
                 exit;
             } catch (Exception $e) {
-                \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
-                return  false;
+                \XLite\Core\TopMessage::addError("Error " . $e->getMessage());
+                return false;
             }
         }
     }
@@ -548,9 +549,17 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
                 return null;
             }
         } catch (Exception $e) {
-            \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
-            return  false;
+            \XLite\Core\TopMessage::addError("Error " . $e->getMessage());
+            return false;
         }
     }
 
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefund(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return Refund::complexRefund($transaction);
+    }
 }

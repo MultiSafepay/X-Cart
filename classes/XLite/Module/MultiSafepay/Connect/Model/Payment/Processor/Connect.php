@@ -3,6 +3,7 @@
 namespace XLite\Module\MultiSafepay\Connect\Model\Payment\Processor;
 
 use XLite\Module\MultiSafepay\Connect\Model\Cart;
+use XLite\Module\MultiSafepay\Connect\Model\Payment\Refund;
 use XLite\Module\MultiSafepay\Connect\Model\Tax;
 
 class Connect extends \XLite\Model\Payment\Base\WebBased {
@@ -27,13 +28,15 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
     /**
      * Get allowed backend transactions
      *
-     * @return string Status code
+     * @return string[] Status code
      */
     public function getAllowedTransactions()
     {
-        return array(
-            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND
-        );
+        return [
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND,
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND_PART,
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND_MULTI,
+        ];
     }
 
     /**
@@ -582,6 +585,30 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
         return '2.2.0';
     }
 
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefund(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return Refund::simpleRefund($transaction);
+    }
 
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefundPart(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return $this->doRefund($transaction);
+    }
 
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefundMulti(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return $this->doRefund($transaction);
+    }
 }

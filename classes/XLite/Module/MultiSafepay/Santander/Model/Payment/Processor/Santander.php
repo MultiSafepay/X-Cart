@@ -27,9 +27,20 @@ use XLite\Core\Converter;
 use XLite\Model\Order;
 use XLite\Model\Payment\Method;
 use XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect;
+use XLite\Module\MultiSafepay\Connect\Model\Payment\Refund;
 
 class Santander extends Connect
 {
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllowedTransactions()
+    {
+        return array(
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND
+        );
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -63,5 +74,14 @@ class Santander extends Connect
         $processor->gateway = 'Santander';
         $processor->icon = 'msp_santander.png';
         return $processor->getIconPath($order, $method);
+    }
+
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefund(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return Refund::complexRefund($transaction);
     }
 }

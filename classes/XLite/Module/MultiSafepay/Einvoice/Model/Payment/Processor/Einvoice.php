@@ -25,6 +25,7 @@ namespace XLite\Module\MultiSafepay\Einvoice\Model\Payment\Processor;
 
 use XLite\Module\MultiSafepay\Connect\Model\Cart;
 use XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect;
+use XLite\Module\MultiSafepay\Connect\Model\Payment\Refund;
 use XLite\Module\MultiSafepay\Connect\Model\Tax;
 
 class Einvoice extends \XLite\Model\Payment\Base\WebBased
@@ -552,6 +553,15 @@ class Einvoice extends \XLite\Model\Payment\Base\WebBased
             \XLite\Core\TopMessage::addError("Error " .$e->getMessage());
             return  false;
         }
+    }
+
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefund(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return Refund::complexRefund($transaction);
     }
 
 }
