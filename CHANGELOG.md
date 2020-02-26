@@ -1,3 +1,20 @@
+## 2.3.0
+Release date: Feb 26th, 2020
+
+### Added
++ PLGXCTS-97: Add refund support (full refund only for pay after methods, full and partial for others)
++ PLGXCTS-98: Add support for shipment updates
++ PLGXCTS-82: Add compatibility with Value Added Tax / Goods and Service tax module
+
+### Fixed
++ PLGXCTS-89: Correct broken ING Home'Pay title
++ PLGXCTS-86: Fix fatal error when using SOFORT Banking
+
+### Changed
++ PLGXCTS-81: Bump plugin version to become compatible with X-Cart 5.4.x
+
+***
+
 ## 2.2.0
 Release date: Apr 24th, 2019
 
@@ -12,11 +29,15 @@ Release date: Apr 24th, 2019
 + PLGXCTS-25: Fixed getTranslation error in shipping.
 + PLGXCTS-64: Fixed crash on returning from successful payment for some payment methods.
 
+***
+
 ## 2.1.0
 Release date: Dec 15th, 2015
 ### Changes
 + Added Klarna as a payment method.
 + Added Refund API support.
+
+***
 
 ## 2.0.0
 Release date: Jul 3th, 2015
