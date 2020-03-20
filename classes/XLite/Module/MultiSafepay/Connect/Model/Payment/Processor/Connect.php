@@ -582,7 +582,7 @@ class Connect extends \XLite\Model\Payment\Base\WebBased {
 
     public static function getPluginVersion()
     {
-        return '2.3.0-RC1';
+        return '2.3.0';
     }
 
     /**
