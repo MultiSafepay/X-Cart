@@ -36,9 +36,7 @@ class Santander extends Connect
      */
     public function getAllowedTransactions()
     {
-        return array(
-            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND
-        );
+        return [];
     }
     
     /**

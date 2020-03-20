@@ -54,9 +54,7 @@ class Klarna extends \XLite\Model\Payment\Base\WebBased
      */
     public function getAllowedTransactions()
     {
-        return array(
-            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND
-        );
+        return [];
     }
 
     /**
