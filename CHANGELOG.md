@@ -1,8 +1,8 @@
 ## 2.3.0
-Release date: Feb 26th, 2020
+Release date: Mar 20th, 2020
 
 ### Added
-+ PLGXCTS-97: Add refund support (full refund only for pay after methods, full and partial for others)
++ PLGXCTS-97: Add refund support (full and partial for non billing suite)
 + PLGXCTS-98: Add support for shipment updates
 + PLGXCTS-82: Add compatibility with Value Added Tax / Goods and Service tax module
 
