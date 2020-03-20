@@ -1,0 +1,11 @@
+version: 5.4.0.0
+type: payment
+authorName: MultiSafepay
+moduleName: 'MultiSafepay SOFORT Banking'
+description: 'Enables the MultiSafepay SOFORT Banking module'
+minorRequiredCoreVersion: 0
+dependsOn: {  }
+incompatibleWith: {  }
+skins: {  }
+showSettingsForm: false
+canDisable: true

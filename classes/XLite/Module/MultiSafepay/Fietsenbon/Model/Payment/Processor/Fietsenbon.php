@@ -23,37 +23,15 @@
 
 namespace XLite\Module\MultiSafepay\Fietsenbon\Model\Payment\Processor;
 
-class Fietsenbon extends \XLite\Model\Payment\Base\WebBased
+use XLite\Core\Converter;
+use XLite\Model\Order;
+use XLite\Model\Payment\Method;
+use XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect;
+
+class Fietsenbon extends Connect
 {
-
     /**
-     * Get operation types
-     *
-     * @return array
-     */
-    public function getOperationTypes()
-    {
-        return array(
-            self::OPERATION_SALE,
-        );
-    }
-
-    /**
-     * Get allowed backend transactions
-     *
-     * @return string Status code
-     */
-    public function getAllowedTransactions()
-    {
-        return array(
-            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND,
-        );
-    }
-
-    /**
-     * Get settings widget or template
-     *
-     * @return string Widget class name or template path
+     * {@inheritDoc}
      */
     public function getSettingsWidget()
     {
@@ -61,160 +39,29 @@ class Fietsenbon extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * Process return
-     *
-     * @param \XLite\Model\Payment\Transaction $transaction Return-owner transaction
-     *
-     * @return void
+     * {@inheritDoc}
      */
-    public function processReturn(\XLite\Model\Payment\Transaction $transaction)
-    {
-        parent::processReturn($transaction);
-        $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->processReturn($transaction);
-    }
-
-    /**
-     * Get initial transaction type (used when customer places order)
-     *
-     * @param \XLite\Model\Payment\Method $method Payment method object OPTIONAL
-     *
-     * @return string
-     */
-    public function getInitialTransactionType($method = null)
-    {
-        return \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_SALE;
-    }
-
-    /**
-     * Check - payment method is configured or not
-     *
-     * @param \XLite\Model\Payment\Method $method Payment method
-     *
-     * @return boolean
-     */
-    public function isConfigured(\XLite\Model\Payment\Method $method)
-    {
-        return parent::isConfigured($method) && $this->isAllSettingsProvided($method);
-    }
-
-    /**
-     * Check - payment method is configured or not
-     *
-     * @param \XLite\Model\Payment\Method $method Payment method
-     *
-     * @return boolean
-     */
-    public function isAllSettingsProvided(\XLite\Model\Payment\Method $method)
-    {
-        return $method->getSetting('prefix');
-    }
-
-    /**
-     * Get return type
-     *
-     * @return string
-     */
-    public function getReturnType()
-    {
-        return self::RETURN_TYPE_HTTP_REDIRECT;
-    }
-
-    /**
-     * Returns the list of settings available for this payment processor
-     *
-     * @return array
-     */
-    public function getAvailableSettings()
-    {
-        return array(
-            'prefix'
-        );
-    }
-
-    /**
-     * Get payment method admin zone icon URL
-     *
-     * @param \XLite\Model\Payment\Method $method Payment method
-     *
-     * @return string
-     */
-    public function getAdminIconURL(\XLite\Model\Payment\Method $method)
+    public function isConfigured(Method $method)
     {
         return true;
     }
 
     /**
-     * Check - payment method has enabled test mode or not
-     *
-     * @param \XLite\Model\Payment\Method $method Payment method
-     *
-     * @return boolean
-     */
-    public function isTestMode(\XLite\Model\Payment\Method $method)
-    {
-        return '0' == $this->getSetting('Test');
-    }
-
-    /**
-     * Start payment transaction
-     *
-     * @param string  $issuerId Issuer ID selected by customer
-     * @param integer $transid  Current transaction ID
-     *
-     * @return void
-     */
-    public function doTransactionRequest($issuerId, $transid)
-    {
-        $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
-        $processor->startTransaction('', $transid, 'MultiSafepay Connect', 'Fietsenbon');
-    }
-
-    /**
-     * Get redirect form URL
-     *
-     * @return string
+     * {@inheritDoc}
      */
     protected function getFormURL()
     {
-        return \XLite\Core\Converter::buildURL('Fietsenbon', 'transaction');
+        return Converter::buildURL('Fietsenbon', 'transaction');
     }
 
     /**
-     * Get redirect form fields list
-     *
-     * @return array
+     * {@inheritDoc}
      */
-    protected function getFormFields()
+    public function getIconPath(Order $order = null, Method $method = null)
     {
-        return array(
-            'transid' => $this->transaction->getPublicTxnId(),
-            'returnURL' => $this->getReturnURL(null, true)
-        );
-    }
-
-    /**
-     * 
-     * @param \XLite\Model\Order $order
-     * @param \XLite\Model\Payment\Method $method
-     * @return type
-     */
-    public function getIconPath(\XLite\Model\Order $order = null, \XLite\Model\Payment\Method $method = null)
-    {
-        $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
+        $processor = new Connect();
         $processor->gateway = 'Fietsenbon';
         $processor->icon = 'msp_fietsenbon.png';
         return $processor->getIconPath($order, $method);
     }
-
-    /**
-     * 
-     * @param \XLite\Model\Payment\Method $method
-     * @return string
-     */
-    public function getCheckoutTemplate(\XLite\Model\Payment\Method $method)
-    {
-        return 'modules/MultiSafepay/Connect/checkout/gateway.twig';
-    }
-
 }

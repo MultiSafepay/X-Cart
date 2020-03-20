@@ -29,8 +29,8 @@ class Giropay extends \XLite\Controller\Customer\ACustomer
     protected function doActionTransaction()
     {
         try {
-            $processor = new \XLite\Module\MultiSafepay\Giropay\Model\Payment\Processor\Giropay();
-            $processor->doTransactionRequest('', \XLite\Core\Request::getInstance()->transid, 'MultiSafepay Connect', 'GIROPAY');
+            $processor = new \XLite\Module\MultiSafepay\Connect\Model\Payment\Processor\Connect();
+            $processor->startTransaction('', \XLite\Core\Request::getInstance()->transid, 'MultiSafepay Connect', 'GIROPAY');
         } catch (\Exception $e) {
             \XLite\Core\TopMessage::addError(static::t('MultiSafepay - ' . htmlspecialchars($e->getMessage())));
         }

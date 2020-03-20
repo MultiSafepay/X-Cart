@@ -1,0 +1,11 @@
+version: 5.4.0.0
+type: payment
+authorName: MultiSafepay
+moduleName: 'MultiSafepay VVV Giftcard'
+description: 'Enables the MultiSafepay VVV Giftcard module'
+minorRequiredCoreVersion: 0
+dependsOn: {  }
+incompatibleWith: {  }
+skins: {  }
+showSettingsForm: false
+canDisable: true

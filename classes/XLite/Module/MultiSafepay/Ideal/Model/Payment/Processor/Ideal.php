@@ -23,6 +23,8 @@
 
 namespace XLite\Module\MultiSafepay\Ideal\Model\Payment\Processor;
 
+use XLite\Module\MultiSafepay\Connect\Model\Payment\Refund;
+
 class Ideal extends \XLite\Model\Payment\Base\WebBased
 {
 
@@ -46,13 +48,15 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     /**
      * Get allowed backend transactions
      *
-     * @return string Status code
+     * @return string[] Status code
      */
     public function getAllowedTransactions()
     {
-        return array(
-            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND
-        );
+        return [
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND,
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND_PART,
+            \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND_MULTI,
+        ];
     }
 
     /**
@@ -194,7 +198,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @return string
      */
     protected function getEnvironment()
@@ -271,7 +275,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getInputTemplate()
@@ -282,7 +286,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param \XLite\Model\Payment\Method $method
      * @return string
      */
@@ -338,7 +342,7 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
-     * 
+     *
      * @param type $order
      * @param type $method
      * @return type
@@ -350,5 +354,29 @@ class Ideal extends \XLite\Model\Payment\Base\WebBased
         $processor->icon = 'msp_ideal.png';
         return $processor->getIconPath($order, $method);
     }
+
+    protected function doRefund(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return Refund::simpleRefund($transaction);
+    }
+
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefundPart(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return $this->doRefund($transaction);
+    }
+
+    /**
+     * @param \XLite\Model\Payment\BackendTransaction $transaction
+     * @return bool
+     */
+    protected function doRefundMulti(\XLite\Model\Payment\BackendTransaction $transaction)
+    {
+        return $this->doRefund($transaction);
+    }
+
 
 }
